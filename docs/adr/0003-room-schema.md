@@ -53,11 +53,11 @@ at the first schema, versus retrofitting it once a real migration is already ove
 
 - Every expense's category reference is always resolvable — no defensive null-handling for "the
   category this expense pointed at no longer exists" anywhere downstream, including the
-  insights aggregation (commit 22).
+  insights aggregation (commit 23).
 - **Invariant: every `CategoryId` an `AiEngine` can emit must already exist in the database.**
   The `@ForeignKey RESTRICT` above enforces this at write time for any engine's suggestion —
   `RuleBasedEngine` (commit 18) holds it by sharing `DefaultCategories` with the startup seed;
-  `GeminiNanoEngine` (commit 21) must hold it too, whether by constraining its output vocabulary
+  `GeminiNanoEngine` (commit 22) must hold it too, whether by constraining its output vocabulary
   to seeded categories or by falling back to `UNCATEGORIZED` for anything else. No engine may
   invent a category id the confirm screen (commit 19) or ledger could then fail to resolve.
 - Deleting a category is a two-step user action in spirit (archive now, nothing to reconcile
@@ -128,7 +128,7 @@ anything.
 **Invariant, made explicit for every future `AiEngine`:** every `CategoryId` an engine can emit
 must already exist in the database. The `categoryId` FK RESTRICT above enforces this at write
 time regardless of which engine suggested it — `RuleBasedEngine` (commit 18) holds it today by
-sharing `DefaultCategories` with the startup seed; `GeminiNanoEngine` (commit 21) must hold it
+sharing `DefaultCategories` with the startup seed; `GeminiNanoEngine` (commit 22) must hold it
 too, whether by constraining its output vocabulary to seeded categories or by falling back to
 `UNCATEGORIZED` for anything else. No engine may invent a category id the confirm screen or
 ledger could then fail to resolve.

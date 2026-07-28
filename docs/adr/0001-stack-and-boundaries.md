@@ -48,7 +48,7 @@ checked at runtime), `RuleBasedEngine` (deterministic keyword/heuristic categori
 available, fully unit-testable), and a `CloudEngine` seam (Firebase AI Logic; interface-only in
 MVP, strictly opt-in, OFF by default). Runtime capability detection picks the best available
 engine; degradation is graceful and visible in the UI. The full design is deferred to ADR-0006
-(commit 21) — this ADR only fixes the boundary: all AI behind one interface, on-device first.
+(commit 22) — this ADR only fixes the boundary: all AI behind one interface, on-device first.
 
 ## License and trademark
 

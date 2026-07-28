@@ -67,10 +67,10 @@ product scope · the next stretch of the ladder.
   parse output on the `Receipt` — the confirm screen is a discovered missing ladder row, flagged
   below for the Phase 3 gate
 - [x] 18. `feat(ai): RuleBasedEngine categorizer` + tests — `:core:ai` carved out, pure JVM for
-  now (the android-library conversion belongs to row 21, when `GeminiNanoEngine` needs a
+  now (the android-library conversion belongs to row 22, when `GeminiNanoEngine` needs a
   `Context`). A pure keyword categorizer: whole-word case-insensitive matching, rule order as
   deterministic precedence for ambiguous words, `UNCATEGORIZED` floor. No `AiEngine` interface
-  yet — ADR-0001 fixed the boundary and explicitly deferred that design to ADR-0006 (row 21).
+  yet — ADR-0001 fixed the boundary and explicitly deferred that design to ADR-0006 (row 22).
   The engine's vocabulary and the startup seed share one source of truth (`DefaultCategories`
   in `:core:model`), so every id the engine can suggest exists in the database by construction
   — no FK ambush when confirm starts persisting suggestions
@@ -92,16 +92,23 @@ product scope · the next stretch of the ladder.
   exactly one expense exists with the edited amount, the user's chosen category, and the
   `receiptId` linkage. The executable version of the manual boot walkthrough — the loop is the
   product, so the loop gets a test. No production code changes expected from this row.
-- [ ] 21. `GeminiNanoEngine` behind capability check — ADR-0006 on-device-first AI
-- [ ] 22. `:feature:insights` monthly summary + Espresso interop test
-- [ ] 23. `Entitlements` seam — ADR-0007 monetization without lock-in
-- [ ] 24. Kover gate ≥80% on ViewModels/domain + coverage badge
-- [ ] 25. Screenshots/GIF + README refresh
-- [ ] 26. `v0.1.0` tagged release with changelog
+- [ ] 21. `fix(money): shared locale-aware Money display formatting, replacing the display placeholders`
+  — one correct shared formatter respecting ISO-4217 fraction digits (a 12000-minor-unit KRW
+  amount renders as 12,000 KRW, never 120.00), replacing the duplicated two-decimal placeholders
+  in `:feature:ledger` and `:feature:confirm`; unit tests pin 0-, 2-, and 3-fraction-digit
+  currencies; `Money` itself stays formatting-free (ADR-0002 — no new ADR needed, the boundary
+  is already drawn). Closes a known-wrong display path (triage law) before a third consumer
+  (insights, row 23) arrives
+- [ ] 22. `GeminiNanoEngine` behind capability check — ADR-0006 on-device-first AI
+- [ ] 23. `:feature:insights` monthly summary + Espresso interop test
+- [ ] 24. `Entitlements` seam — ADR-0007 monetization without lock-in
+- [ ] 25. Kover gate ≥80% on ViewModels/domain + coverage badge
+- [ ] 26. Screenshots/GIF + README refresh
+- [ ] 27. `v0.1.0` tagged release with changelog
 
 ## Queued badges (added only when truthful)
 
-- Kover coverage badge (shields endpoint from a gist, no external service) — commit 24
+- Kover coverage badge (shields endpoint from a gist, no external service) — commit 25
 - `github/v/release` + downloads badges + official Google Play badge — v0.1.0
 - Star-history widget + Releases APK download section — once v0.1.0 exists
 

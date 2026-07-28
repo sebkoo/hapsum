@@ -64,7 +64,7 @@ load-bearing (the CAS loop may re-invoke the reducer on contention). `UiState`s 
 
 **No blanket UseCase layer.** ViewModels talk to repositories directly. A use case is
 introduced only where domain logic exists beyond pass-through; the first expected candidate is
-monthly insight aggregation (row 22). "Where are your use cases?" — here, when they earn their
+monthly insight aggregation (row 23). "Where are your use cases?" — here, when they earn their
 file.
 
 **Navigation is an Effect.** Screens emit navigation as one-shot effects; features export
@@ -129,5 +129,5 @@ gains `:core:mvi` (approved at this row's gate). `ReducerTestHarness` stays in t
 - **Abstract `reduce` method on the ViewModel** — puts the reducer where the harness cannot
   reach it without instantiating an Android class; breaks plain-JVM reducer testing.
 - **A blanket UseCase-per-interaction layer** — pass-through ceremony between ViewModel and
-  repository; rejected until real domain logic exists (row 22 aggregation is the first
+  repository; rejected until real domain logic exists (row 23 aggregation is the first
   candidate).
