@@ -80,7 +80,7 @@ One atomic commit per step — watch the history, that's the product.
   vocabulary with the startup seed
 - ✅ 19. `:feature:confirm` — confirm/edit screen writing the `Expense`, schema v4 adds the
   `expenses.lineItemId` FK
-- 🔜 20. End-to-end integration test: capture→confirm→ledger against a real in-memory database
+- ✅ 20. End-to-end integration test: capture→confirm→ledger against a real in-memory database
 - 🔜 21–26. Gemini Nano → insights → entitlements seam → coverage gate → `v0.1.0` (full ladder in
   [docs/PROGRESS.md](docs/PROGRESS.md))
 

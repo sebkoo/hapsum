@@ -84,7 +84,7 @@ product scope · the next stretch of the ladder.
   table-recreate migration, `MigrationTestHelper` v3→v4); category prefills from
   `RuleBasedEngine`, always user-changeable; totals-mismatch hint is display-only; save clears
   capture/confirm from the back stack and returns to the ledger
-- [ ] 20. `test(integration): prove the capture→confirm→ledger loop end-to-end against a real
+- [x] 20. `test(integration): prove the capture→confirm→ledger loop end-to-end against a real
   in-memory database` — Robolectric/JVM only, runs under verify.sh/CI. Seeds a `Receipt` with
   parse output (one HIGH field, one LOW field, line items with a totals mismatch), drives
   `ConfirmViewModel` through the journey (prefills verified, user edits the LOW-confidence
