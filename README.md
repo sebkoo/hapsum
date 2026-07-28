@@ -65,7 +65,8 @@ One atomic commit per step — watch the history, that's the product.
 - ✅ 6. README v1
 - ✅ 7. `:core:model` + `:core:testing` carve-out
 - ✅ 8. `:core:data` — Room schema + offline-first repository
-- 🔜 9–20. Design system → MVI runtime → ledger feature → CameraX capture → OCR + parser →
+- ✅ 9. Room schema exercised against an in-memory database (Robolectric)
+- 🔜 10–21. Design system → MVI runtime → ledger feature → CameraX capture → OCR + parser →
   AI engines → insights → entitlements seam → coverage gate → `v0.1.0` (full ladder in
   [docs/PROGRESS.md](docs/PROGRESS.md))
 

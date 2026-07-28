@@ -24,6 +24,7 @@ androidxTestRunner = "1.7.0"
 androidxTestRules = "1.7.0"
 mockk = "1.14.11"
 turbine = "1.2.1"
+robolectric = "4.15.1"
 spotless = "8.8.0"
 ktlint = "1.8.0"
 kover = "0.9.8"
@@ -79,6 +80,7 @@ espresso-core = { module = "androidx.test.espresso:espresso-core", version.ref =
 mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
 mockk-android = { module = "io.mockk:mockk-android", version.ref = "mockk" }
 turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine" }
+robolectric = { module = "org.robolectric:robolectric", version.ref = "robolectric" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

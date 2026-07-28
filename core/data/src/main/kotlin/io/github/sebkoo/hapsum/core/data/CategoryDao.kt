@@ -16,4 +16,7 @@ interface CategoryDao {
 
     @Query("UPDATE categories SET isArchived = 1 WHERE id = :id")
     suspend fun archive(id: String)
+
+    @Query("SELECT * FROM categories WHERE id = :id")
+    suspend fun getById(id: String): CategoryEntity?
 }

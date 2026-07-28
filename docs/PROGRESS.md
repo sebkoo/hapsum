@@ -20,22 +20,27 @@ product scope · the next stretch of the ladder.
 
 - [x] 7. `:core:model` + `:core:testing` carve-out
 - [x] 8. Room schema + repository (offline-first), MockK'd DAO tests — ADR-0003 Room schema
-- [ ] 9. `:core:designsystem` tokens/theme
-- [ ] 10. MVI runtime (`MviViewModel` base, reducer test harness) — ADR-0004 MVI×MVVM
-- [ ] 11. `:feature:ledger` list screen + ViewModel tests (Turbine) + first Compose UI test
-- [ ] 12. CameraX capture screen
-- [ ] 13. ML Kit OCR + deterministic receipt parser (synthetic fixtures, golden tests)
-- [ ] 14. `RuleBasedEngine` categorizer + tests
-- [ ] 15. `GeminiNanoEngine` behind capability check — ADR-0005 on-device-first AI
-- [ ] 16. `:feature:insights` monthly summary + Espresso interop test
-- [ ] 17. `Entitlements` seam — ADR-0006 monetization without lock-in
-- [ ] 18. Kover gate ≥80% on ViewModels/domain + coverage badge
-- [ ] 19. Screenshots/GIF + README refresh
-- [ ] 20. `v0.1.0` tagged release with changelog
+- [x] 9. `test(core-data): exercise the Room schema against an in-memory database` — Robolectric,
+  runs under verify.sh/CI (no emulator): Uncategorized seed exists in a fresh database; archive
+  flag round-trips and no hard-delete path exists on the DAO; inserting an expense referencing a
+  nonexistent category throws (FK RESTRICT enforced); `observeExpensesWithCategory()` returns the
+  correctly mapped projection
+- [ ] 10. `:core:designsystem` tokens/theme
+- [ ] 11. MVI runtime (`MviViewModel` base, reducer test harness) — ADR-0004 MVI×MVVM
+- [ ] 12. `:feature:ledger` list screen + ViewModel tests (Turbine) + first Compose UI test
+- [ ] 13. CameraX capture screen
+- [ ] 14. ML Kit OCR + deterministic receipt parser (synthetic fixtures, golden tests)
+- [ ] 15. `RuleBasedEngine` categorizer + tests
+- [ ] 16. `GeminiNanoEngine` behind capability check — ADR-0005 on-device-first AI
+- [ ] 17. `:feature:insights` monthly summary + Espresso interop test
+- [ ] 18. `Entitlements` seam — ADR-0006 monetization without lock-in
+- [ ] 19. Kover gate ≥80% on ViewModels/domain + coverage badge
+- [ ] 20. Screenshots/GIF + README refresh
+- [ ] 21. `v0.1.0` tagged release with changelog
 
 ## Queued badges (added only when truthful)
 
-- Kover coverage badge (shields endpoint from a gist, no external service) — commit 18
+- Kover coverage badge (shields endpoint from a gist, no external service) — commit 19
 - `github/v/release` + downloads badges + official Google Play badge — v0.1.0
 - Star-history widget + Releases APK download section — once v0.1.0 exists
 
