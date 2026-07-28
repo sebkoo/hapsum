@@ -25,7 +25,7 @@ product scope · the next stretch of the ladder.
   flag round-trips and no hard-delete path exists on the DAO; inserting an expense referencing a
   nonexistent category throws (FK RESTRICT enforced); `observeExpensesWithCategory()` returns the
   correctly mapped projection
-- [ ] 10. `:core:designsystem` tokens/theme
+- [x] 10. `:core:designsystem` tokens/theme
 - [ ] 11. MVI runtime (`MviViewModel` base, reducer test harness) — ADR-0004 MVI×MVVM
 - [ ] 12. `:feature:ledger` list screen + ViewModel tests (Turbine) + first Compose UI test
 - [ ] 13. CameraX capture screen
