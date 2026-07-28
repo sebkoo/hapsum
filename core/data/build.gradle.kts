@@ -42,6 +42,8 @@ dependencies {
     implementation(libs.room3.runtime)
     ksp(libs.room3.compiler)
     implementation(libs.coroutines.android)
+    implementation(libs.hilt.android)
+    ksp(libs.hilt.compiler)
 
     testImplementation(project(":core:testing"))
     testImplementation(libs.junit)

@@ -2,6 +2,7 @@ plugins {
     id("com.android.library")
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.ksp)
 }
 
 android {
@@ -43,6 +44,9 @@ dependencies {
     implementation(libs.navigation3.runtime)
     implementation(libs.coroutines.android)
     implementation(libs.kotlinx.serialization.core)
+    implementation(libs.hilt.android)
+    implementation(libs.hilt.navigation.compose)
+    ksp(libs.hilt.compiler)
 
     testImplementation(project(":core:testing"))
     testImplementation(libs.junit)

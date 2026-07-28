@@ -39,7 +39,7 @@ product scope · the next stretch of the ladder.
 
 ## Phase 2 — capture and on-device categorization
 
-- [ ] 15. `feat(di): adopt Hilt, retire AppContainer` — ADR-0005 Hilt over Koin/manual, including
+- [x] 15. `feat(di): adopt Hilt, retire AppContainer` — ADR-0005 Hilt over Koin/manual, including
   the honest origin story (manual container to keep the graph visible, Hilt once the second
   ViewModel approached); migrates every current injection site (database, repositories,
   dispatchers, `LedgerViewModel` → `@HiltViewModel`); no Hilt test infrastructure until a test

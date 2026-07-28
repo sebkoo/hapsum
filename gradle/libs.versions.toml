@@ -9,11 +9,12 @@ room3 = "3.0.0"
 coroutines = "1.11.0"
 kotlinxSerialization = "1.9.0"
 datastore = "1.2.1"
-# core/activity/lifecycle: held at the last stables that accept compileSdk 36
-# (their 2026 successors require compileSdk 37, which is not targeted — ADR-0001).
+# core/activity/lifecycle/hilt-navigation-compose: held at the last stables that accept
+# compileSdk 36 (their 2026 successors require compileSdk 37, which is not targeted — ADR-0001).
 coreKtx = "1.18.0"
 activityCompose = "1.12.4"
 lifecycle = "2.10.0"
+hiltNavigationCompose = "1.3.0"
 camerax = "1.6.1"
 mlkitTextRecognition = "16.0.1"
 mlkitGenai = "1.0.0-beta1"
@@ -54,6 +55,7 @@ navigation3-ui = { module = "androidx.navigation3:navigation3-ui", version.ref =
 
 hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hilt" }
 hilt-compiler = { module = "com.google.dagger:hilt-android-compiler", version.ref = "hilt" }
+hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "hiltNavigationCompose" }
 
 room3-runtime = { module = "androidx.room3:room3-runtime", version.ref = "room3" }
 room3-compiler = { module = "androidx.room3:room3-compiler", version.ref = "room3" }
