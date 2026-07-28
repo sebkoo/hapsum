@@ -9,7 +9,7 @@
 Every screen in Hapsum — capture, ledger, insights — ultimately displays and sums money.
 `Expense.amount` and `LineItem.amount` are the first fields to touch this, and whatever
 representation is chosen here is load-bearing everywhere downstream: Room columns (commit 8),
-arithmetic in the insights aggregation (commit 16), and any future export/sync format. Changing
+arithmetic in the insights aggregation (commit 19), and any future export/sync format. Changing
 it later means a data migration across every persisted receipt and expense, so it must be
 right before `:core:model` lands.
 

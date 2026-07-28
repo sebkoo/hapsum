@@ -10,7 +10,7 @@
 modeling mistake becomes expensive: once a device has real expense rows, changing how categories
 and expenses relate means a migration, not a rename. Two things need deciding before the schema
 is written, not after: what happens to an expense when its category goes away, and what shape
-`:feature:ledger` (commit 11) will read — designing that query now, ahead of the UI, means the
+`:feature:ledger` (commit 13) will read — designing that query now, ahead of the UI, means the
 feature commit consumes it rather than improvising a join under its own time pressure.
 
 ## Decision
@@ -53,13 +53,13 @@ at the first schema, versus retrofitting it once a real migration is already ove
 
 - Every expense's category reference is always resolvable — no defensive null-handling for "the
   category this expense pointed at no longer exists" anywhere downstream, including the
-  insights aggregation (commit 16).
+  insights aggregation (commit 19).
 - Deleting a category is a two-step user action in spirit (archive now, nothing to reconcile
   later) rather than a destructive one; a future "manage categories" screen can safely offer
   "archive" without a confirmation dialog explaining data loss, because there isn't any.
-- `:feature:ledger` (commit 11) has its read query already shaped; it wires a `ViewModel` around
+- `:feature:ledger` (commit 13) has its read query already shaped; it wires a `ViewModel` around
   `observeExpensesWithCategory()` rather than designing a join.
-- Capture (commit 12) and the OCR parser (commit 13) must always produce a `Receipt` before an
+- Capture (commit 15) and the OCR parser (commit 16) must always produce a `Receipt` before an
   `Expense` — there is no code path today that can construct an `Expense` without one.
 - Roadmap notes, explicitly out of scope here:
   - **Manual entry** (an `Expense` without a `Receipt`) needs a schema migration (`receiptId`

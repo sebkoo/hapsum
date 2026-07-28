@@ -63,7 +63,7 @@ load-bearing (the CAS loop may re-invoke the reducer on contention). `UiState`s 
 
 **No blanket UseCase layer.** ViewModels talk to repositories directly. A use case is
 introduced only where domain logic exists beyond pass-through; the first expected candidate is
-monthly insight aggregation (row 18). "Where are your use cases?" — here, when they earn their
+monthly insight aggregation (row 19). "Where are your use cases?" — here, when they earn their
 file.
 
 **Navigation is an Effect.** Screens emit navigation as one-shot effects; features export
@@ -94,17 +94,17 @@ gains `:core:mvi` (approved at this row's gate). `ReducerTestHarness` stays in t
   pure reduction. Feature tests drive internal intents through their real sources (a MockK'd
   repository flow), never by calling them directly. A shared `MainDispatcherRule` lands in
   `:core:testing` with its first user (row 13); `DispatcherProvider` lands with the first
-  CPU/IO-shifting feature (expected rows 15–16).
+  CPU/IO-shifting feature (expected rows 16–17).
 - Effects are UI-lifetime-scoped, fire-and-forget: anything that must survive the screen
   belongs in the data layer or in state, never in an effect.
 - Process death is out of MVP scope: ledger state is re-derivable from Room; `initialState`
   being a constructor parameter keeps the later SavedStateHandle retrofit non-breaking
   (restore via `initialState = restoreFrom(handle)`, save via one optional hook). `:app`'s
   Nav3 back-stack keys must be saveable from day one regardless.
-- Known sequencing gap, surfaced to the phase gate: row 14's outcome ("navigation effect
-  carrying the new receipt id") has no receipt persistence behind it yet — a `ReceiptEntity`,
-  repository, and schema v2 migration must land in or before row 14. Ladder changes are a
-  human act; recorded here, not enacted.
+- The sequencing gap this ADR's review surfaced — capture's "navigation effect carrying the
+  new receipt id" had no receipts table behind it — was approved at the row-12 gate as ladder
+  row 14: `ReceiptEntity`, FK RESTRICT from `expenses.receiptId`, and the v1→v2 table-recreate
+  migration land there, before the capture screen (row 15).
 
 ## Alternatives considered
 
@@ -124,5 +124,5 @@ gains `:core:mvi` (approved at this row's gate). `ReducerTestHarness` stays in t
 - **Abstract `reduce` method on the ViewModel** — puts the reducer where the harness cannot
   reach it without instantiating an Android class; breaks plain-JVM reducer testing.
 - **A blanket UseCase-per-interaction layer** — pass-through ceremony between ViewModel and
-  repository; rejected until real domain logic exists (row 18 aggregation is the first
+  repository; rejected until real domain logic exists (row 19 aggregation is the first
   candidate).

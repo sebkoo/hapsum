@@ -69,8 +69,8 @@ One atomic commit per step — watch the history, that's the product.
 - ✅ 10. `:core:designsystem` tokens/theme
 - ✅ 11. Push-as-approval cadence recorded in the AI harness
 - ✅ 12. `:core:mvi` runtime + reducer test harness
-- 🔜 13–22. Ledger feature → CameraX capture → OCR + parser → AI engines → insights →
-  entitlements seam → coverage gate → `v0.1.0` (full ladder in
+- 🔜 13–23. Ledger feature → receipt persistence (schema v2) → CameraX capture → OCR + parser →
+  AI engines → insights → entitlements seam → coverage gate → `v0.1.0` (full ladder in
   [docs/PROGRESS.md](docs/PROGRESS.md))
 
 ## Tech stack and how it's tested
