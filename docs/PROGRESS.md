@@ -67,10 +67,10 @@ product scope · the next stretch of the ladder.
   parse output on the `Receipt` — the confirm screen is a discovered missing ladder row, flagged
   below for the Phase 3 gate
 - [x] 18. `feat(ai): RuleBasedEngine categorizer` + tests — `:core:ai` carved out, pure JVM for
-  now (the android-library conversion belongs to row 20, when `GeminiNanoEngine` needs a
+  now (the android-library conversion belongs to row 21, when `GeminiNanoEngine` needs a
   `Context`). A pure keyword categorizer: whole-word case-insensitive matching, rule order as
   deterministic precedence for ambiguous words, `UNCATEGORIZED` floor. No `AiEngine` interface
-  yet — ADR-0001 fixed the boundary and explicitly deferred that design to ADR-0006 (row 20).
+  yet — ADR-0001 fixed the boundary and explicitly deferred that design to ADR-0006 (row 21).
   The engine's vocabulary and the startup seed share one source of truth (`DefaultCategories`
   in `:core:model`), so every id the engine can suggest exists in the database by construction
   — no FK ambush when confirm starts persisting suggestions
@@ -84,16 +84,24 @@ product scope · the next stretch of the ladder.
   table-recreate migration, `MigrationTestHelper` v3→v4); category prefills from
   `RuleBasedEngine`, always user-changeable; totals-mismatch hint is display-only; save clears
   capture/confirm from the back stack and returns to the ledger
-- [ ] 20. `GeminiNanoEngine` behind capability check — ADR-0006 on-device-first AI
-- [ ] 21. `:feature:insights` monthly summary + Espresso interop test
-- [ ] 22. `Entitlements` seam — ADR-0007 monetization without lock-in
-- [ ] 23. Kover gate ≥80% on ViewModels/domain + coverage badge
-- [ ] 24. Screenshots/GIF + README refresh
-- [ ] 25. `v0.1.0` tagged release with changelog
+- [ ] 20. `test(integration): prove the capture→confirm→ledger loop end-to-end against a real
+  in-memory database` — Robolectric/JVM only, runs under verify.sh/CI. Seeds a `Receipt` with
+  parse output (one HIGH field, one LOW field, line items with a totals mismatch), drives
+  `ConfirmViewModel` through the journey (prefills verified, user edits the LOW-confidence
+  amount, changes the suggested category, saves), then asserts through the ledger read path that
+  exactly one expense exists with the edited amount, the user's chosen category, and the
+  `receiptId` linkage. The executable version of the manual boot walkthrough — the loop is the
+  product, so the loop gets a test. No production code changes expected from this row.
+- [ ] 21. `GeminiNanoEngine` behind capability check — ADR-0006 on-device-first AI
+- [ ] 22. `:feature:insights` monthly summary + Espresso interop test
+- [ ] 23. `Entitlements` seam — ADR-0007 monetization without lock-in
+- [ ] 24. Kover gate ≥80% on ViewModels/domain + coverage badge
+- [ ] 25. Screenshots/GIF + README refresh
+- [ ] 26. `v0.1.0` tagged release with changelog
 
 ## Queued badges (added only when truthful)
 
-- Kover coverage badge (shields endpoint from a gist, no external service) — commit 23
+- Kover coverage badge (shields endpoint from a gist, no external service) — commit 24
 - `github/v/release` + downloads badges + official Google Play badge — v0.1.0
 - Star-history widget + Releases APK download section — once v0.1.0 exists
 
@@ -127,3 +135,8 @@ product scope · the next stretch of the ladder.
   amount; deferred until a receipt fixture actually needs it
 - Mid-receipt dropout fixtures — OCR fixtures where a middle section (not just edges) is
   missing or garbled, to exercise the parser's partial-data handling
+- Split transactions — multiple expenses per receipt (one per confirmed line item, each its own
+  category); the v4 `expenses.lineItemId` FK already supports this, confirm just doesn't write
+  it yet (row 19 writes one `Expense` per receipt)
+- Suggestion-vs-correction history — recording when a user changes an engine's suggested
+  category is an on-device learning signal and a candidate Pro-tier insight, not built yet
