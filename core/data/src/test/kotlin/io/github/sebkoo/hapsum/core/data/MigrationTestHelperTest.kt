@@ -110,4 +110,42 @@ class MigrationTestHelperTest {
             }
             v3.close()
         }
+
+    @Test
+    fun `migrate 3 to 4 — v3 expense with a lineItemId — row survives, new FK enforced`() =
+        runTest {
+            val v3 = helper.createDatabase(3)
+            v3.execSQL("INSERT INTO categories (id, name, isArchived) VALUES ('groceries', 'Groceries', 0)")
+            v3.execSQL(
+                "INSERT INTO receipts (id, imageRef, ocrText, parseConfidence) VALUES ('r1', '', '', 0.0)",
+            )
+            v3.execSQL(
+                "INSERT INTO line_items (id, receiptId, position, description, amountMinorUnits, currencyIsoCode) " +
+                    "VALUES ('li1', 'r1', 0, 'Milk', 250, 'USD')",
+            )
+            v3.execSQL(
+                "INSERT INTO expenses (id, amountMinorUnits, currencyIsoCode, categoryId, date, receiptId, " +
+                    "lineItemId) VALUES ('e1', 250, 'USD', 'groceries', 20089, 'r1', 'li1')",
+            )
+            v3.close()
+
+            val v4 = helper.runMigrationsAndValidate(4, listOf(MIGRATION_3_4))
+
+            v4.prepare("SELECT lineItemId FROM expenses WHERE id = 'e1'").use { statement ->
+                assertTrue("expected the v3 expense row to survive the migration", statement.step())
+                assertEquals("li1", statement.getText(0))
+            }
+            v4.execSQL("PRAGMA foreign_keys = ON")
+            var caught: Throwable? = null
+            try {
+                v4.execSQL(
+                    "INSERT INTO expenses (id, amountMinorUnits, currencyIsoCode, categoryId, date, receiptId, " +
+                        "lineItemId) VALUES ('e2', 100, 'USD', 'groceries', 20089, 'r1', 'does-not-exist')",
+                )
+            } catch (t: Throwable) {
+                caught = t
+            }
+            assertTrue("expected the new lineItemId FK to reject an unknown line item", caught != null)
+            v4.close()
+        }
 }

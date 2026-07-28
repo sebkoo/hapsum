@@ -15,6 +15,8 @@ import androidx.navigation3.ui.NavDisplay
 import io.github.sebkoo.hapsum.R
 import io.github.sebkoo.hapsum.feature.capture.CaptureNavKey
 import io.github.sebkoo.hapsum.feature.capture.captureEntry
+import io.github.sebkoo.hapsum.feature.confirm.ConfirmNavKey
+import io.github.sebkoo.hapsum.feature.confirm.confirmEntry
 import io.github.sebkoo.hapsum.feature.ledger.LedgerNavKey
 import io.github.sebkoo.hapsum.feature.ledger.ledgerEntry
 
@@ -23,8 +25,9 @@ import io.github.sebkoo.hapsum.feature.ledger.ledgerEntry
  * features never see each other (ADR-0004). Each entry resolves its own `ViewModel` through
  * Hilt (ADR-0005) — no dependencies threaded through this call site. The "add receipt" FAB lives
  * here, not inside the ledger's MVI contract: it needs no state and no reduction, only a push
- * onto the back stack this composable already owns — capture stays the app's first
- * effect-emitting screen (ADR-0004).
+ * onto the back stack this composable already owns. Capture pops itself and pushes confirm;
+ * confirm clears the whole stack back to the ledger on save — the new expense must be visible in
+ * the list, and neither capture nor confirm's now-consumed state should reappear on back (row 19).
  */
 @Composable
 fun HapsumApp() {
@@ -49,7 +52,18 @@ fun HapsumApp() {
             entryProvider =
                 entryProvider {
                     ledgerEntry()
-                    captureEntry(onReceiptCaptured = { backStack.removeLastOrNull() })
+                    captureEntry(
+                        onReceiptCaptured = { receiptId ->
+                            backStack.removeLastOrNull()
+                            backStack.add(ConfirmNavKey(receiptId.value))
+                        },
+                    )
+                    confirmEntry(
+                        onSaved = {
+                            backStack.clear()
+                            backStack.add(LedgerNavKey)
+                        },
+                    )
                 },
         )
     }

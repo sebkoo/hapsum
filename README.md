@@ -78,8 +78,10 @@ One atomic commit per step — watch the history, that's the product.
   schema v3 (parsed fields + line items)
 - ✅ 18. `:core:ai` — deterministic rule-based categorizer, sharing one default-category
   vocabulary with the startup seed
-- 🔜 19–25. Confirm screen → Gemini Nano → insights → entitlements seam → coverage gate →
-  `v0.1.0` (full ladder in [docs/PROGRESS.md](docs/PROGRESS.md))
+- ✅ 19. `:feature:confirm` — confirm/edit screen writing the `Expense`, schema v4 adds the
+  `expenses.lineItemId` FK
+- 🔜 20–25. Gemini Nano → insights → entitlements seam → coverage gate → `v0.1.0` (full ladder in
+  [docs/PROGRESS.md](docs/PROGRESS.md))
 
 ## Tech stack and how it's tested
 

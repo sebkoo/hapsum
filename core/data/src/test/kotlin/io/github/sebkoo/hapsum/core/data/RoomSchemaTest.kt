@@ -6,6 +6,7 @@ import androidx.room3.Room
 import androidx.test.core.app.ApplicationProvider
 import app.cash.turbine.test
 import io.github.sebkoo.hapsum.core.model.CategoryId
+import io.github.sebkoo.hapsum.core.model.LineItemId
 import io.github.sebkoo.hapsum.core.testing.CategoryFixtures
 import io.github.sebkoo.hapsum.core.testing.ExpenseFixtures
 import io.github.sebkoo.hapsum.core.testing.ReceiptFixtures
@@ -103,6 +104,34 @@ class RoomSchemaTest {
         }
 
     @Test
+    fun `expenseDao insert — lineItemId references no row — throws, FK RESTRICT enforced`() =
+        runTest {
+            val categoryDao = db.categoryDao()
+            val receiptDao = db.receiptDao()
+            val expenseDao = db.expenseDao()
+            val category = CategoryFixtures.groceries()
+            val expense = ExpenseFixtures.synthetic(categoryId = category.id, lineItemId = LineItemId("does-not-exist"))
+
+            categoryDao.insertDefaults(listOf(CategoryEntity(id = category.id.value, name = category.name)))
+            receiptDao.insert(
+                ReceiptEntity(id = expense.receiptId.value, imageRef = "", ocrText = "", parseConfidence = 0f),
+            )
+
+            var caught: Throwable? = null
+            try {
+                expenseDao.insert(expense.toEntity())
+            } catch (t: Throwable) {
+                caught = t
+            }
+
+            assertNotNull("expected FK RESTRICT to reject an insert with a nonexistent lineItemId", caught)
+            val isForeignKeyViolation =
+                generateSequence(caught) { it.cause }
+                    .any { it.message?.contains("FOREIGN KEY", ignoreCase = true) == true }
+            assertTrue("expected a foreign key violation, got: $caught", isForeignKeyViolation)
+        }
+
+    @Test
     fun `observeExpensesWithCategory — persisted rows — maps to the domain projection`() =
         runTest {
             val categoryDao = db.categoryDao()
@@ -114,6 +143,18 @@ class RoomSchemaTest {
             categoryDao.insertDefaults(listOf(CategoryEntity(id = category.id.value, name = category.name)))
             receiptDao.insert(
                 ReceiptEntity(id = expense.receiptId.value, imageRef = "", ocrText = "", parseConfidence = 0f),
+            )
+            receiptDao.insertLineItems(
+                listOf(
+                    LineItemEntity(
+                        id = requireNotNull(expense.lineItemId).value,
+                        receiptId = expense.receiptId.value,
+                        position = 0,
+                        description = "Milk",
+                        amountMinorUnits = 2_50,
+                        currencyIsoCode = "USD",
+                    ),
+                ),
             )
             expenseDao.insert(expense.toEntity())
 

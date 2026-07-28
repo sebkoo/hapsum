@@ -112,6 +112,33 @@ expenses` before recreating `expenses`, so no pre-existing expense is dropped or
 app has no shipped users yet, so this path is exercised by tests, not real devices — but the
 migration is written as if it mattered, because eventually it will.
 
+## Amendment (2026-07-28): schema v4 — the `expenses.lineItemId` FK
+
+Row 19 (the confirm screen) closes the gap `ExpenseEntity`'s own KDoc had carried since schema
+v1: `lineItemId` existed as a plain nullable column with no FK, because no `LineItemEntity`
+table existed yet. The table arrived at schema v3 (row 17) but the FK on `expenses` was never
+added — this amendment adds it: `ExpenseEntity` gains a third `ForeignKey` (RESTRICT both ways,
+matching `categoryId` and `receiptId`) plus an index, `HapsumDatabase.version` moves to 4, and
+`MIGRATION_3_4` recreates `expenses` wholesale (SQLite still has no `ALTER TABLE ADD FOREIGN
+KEY`) — the same table-recreate shape as `MIGRATION_1_2`, `createSql` copied verbatim from the
+generated `schemas/.../4.json`. No backfill is needed this time: every `lineItemId` already
+written by capture (row 16) points at a real `line_items` row, so the recreate cannot orphan
+anything.
+
+**Invariant, made explicit for every future `AiEngine`:** every `CategoryId` an engine can emit
+must already exist in the database. The `categoryId` FK RESTRICT above enforces this at write
+time regardless of which engine suggested it — `RuleBasedEngine` (commit 18) holds it today by
+sharing `DefaultCategories` with the startup seed; `GeminiNanoEngine` (commit 20) must hold it
+too, whether by constraining its output vocabulary to seeded categories or by falling back to
+`UNCATEGORIZED` for anything else. No engine may invent a category id the confirm screen or
+ledger could then fail to resolve.
+
+**The confirm screen writes one `Expense` per receipt, `lineItemId = null`.** Row 19 categorizes
+at the receipt level, not per line item — consistent with this ADR's existing "per-line-item
+categorization is deferred" roadmap note above. `lineItemId` stays populated only by a future
+per-line-item write path; today's confirm write never sets it, but the FK now holds regardless
+of who writes it next.
+
 **`ReceiptDao` ships insert-only.** `ReceiptEntity` needs *some* Kotlin-level write path to be
 reachable at all — without one, every FK-dependent test would drop to raw SQL instead of the
 DAO, which is worse. A full read surface and a `ReceiptRepository` belong to capture (row 16),

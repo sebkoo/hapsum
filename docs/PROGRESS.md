@@ -79,8 +79,11 @@ product scope · the next stretch of the ladder.
 
 ## Phase 3 — on-device AI, insights, monetization
 
-- [ ] 19. Confirm screen — receipt confirm/edit UI writing the `Expense` + line-item join in one
-  `@Transaction`; the discovered missing ladder row flagged at commit 17
+- [x] 19. `feat(confirm): add the confirm/edit screen` — `:feature:confirm` carved out; reads the
+  immutable `Receipt` and writes the `Expense` (schema v4 adds the `expenses.lineItemId` FK,
+  table-recreate migration, `MigrationTestHelper` v3→v4); category prefills from
+  `RuleBasedEngine`, always user-changeable; totals-mismatch hint is display-only; save clears
+  capture/confirm from the back stack and returns to the ledger
 - [ ] 20. `GeminiNanoEngine` behind capability check — ADR-0006 on-device-first AI
 - [ ] 21. `:feature:insights` monthly summary + Espresso interop test
 - [ ] 22. `Entitlements` seam — ADR-0007 monetization without lock-in

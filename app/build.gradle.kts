@@ -44,6 +44,7 @@ dependencies {
     implementation(project(":core:mvi"))
     implementation(project(":feature:ledger"))
     implementation(project(":feature:capture"))
+    implementation(project(":feature:confirm"))
 
     implementation(platform(libs.compose.bom))
     implementation(libs.androidx.core.ktx)

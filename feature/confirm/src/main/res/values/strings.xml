@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="confirm_load_failed">Couldn\'t load this receipt</string>
+    <string name="confirm_save_failed">Couldn\'t save this expense</string>
+    <string name="confirm_amount_label">Amount</string>
+    <string name="confirm_date_label">Date (YYYY-MM-DD)</string>
+    <string name="confirm_low_confidence">Low confidence — please double-check</string>
+    <string name="confirm_totals_mismatch">Line items don\'t add up to the total</string>
+    <string name="confirm_save">Save</string>
+</resources>

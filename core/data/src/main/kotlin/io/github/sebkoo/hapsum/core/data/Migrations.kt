@@ -76,3 +76,37 @@ val MIGRATION_2_3: Migration =
             connection.execSQL("CREATE INDEX IF NOT EXISTS `index_line_items_receiptId` ON `line_items` (`receiptId`)")
         }
     }
+
+/**
+ * RESTRICTs `expenses.lineItemId` to `line_items.id` (ADR-0003's confirm-row amendment): the
+ * column existed since schema v1 but the `line_items` table it points at didn't exist until v3
+ * (row 17), so this is the first schema where the FK can be added. SQLite still has no `ALTER
+ * TABLE ADD FOREIGN KEY`, so `expenses` is recreated wholesale — the same table-recreate pattern
+ * as [MIGRATION_1_2]. No backfill needed this time: every non-null `lineItemId` already written
+ * by capture points at a real `line_items` row, so the recreate cannot orphan anything.
+ * `createSql` is copied verbatim from the generated `schemas/.../4.json`, the same discipline as
+ * every migration before it.
+ */
+val MIGRATION_3_4: Migration =
+    object : Migration(3, 4) {
+        override suspend fun migrate(connection: SQLiteConnection) {
+            connection.execSQL(
+                "CREATE TABLE `expenses_new` (`id` TEXT NOT NULL, `amountMinorUnits` INTEGER NOT NULL, " +
+                    "`currencyIsoCode` TEXT NOT NULL, `categoryId` TEXT NOT NULL, `date` INTEGER NOT NULL, " +
+                    "`receiptId` TEXT NOT NULL, `lineItemId` TEXT, PRIMARY KEY(`id`), " +
+                    "FOREIGN KEY(`categoryId`) REFERENCES `categories`(`id`) ON UPDATE RESTRICT ON DELETE RESTRICT , " +
+                    "FOREIGN KEY(`receiptId`) REFERENCES `receipts`(`id`) ON UPDATE RESTRICT ON DELETE RESTRICT , " +
+                    "FOREIGN KEY(`lineItemId`) REFERENCES `line_items`(`id`) ON UPDATE RESTRICT ON DELETE RESTRICT )",
+            )
+            val columns = "id, amountMinorUnits, currencyIsoCode, categoryId, date, receiptId, lineItemId"
+            connection.execSQL(
+                "INSERT INTO `expenses_new` ($columns) SELECT $columns FROM `expenses`",
+            )
+            connection.execSQL("DROP TABLE `expenses`")
+            connection.execSQL("ALTER TABLE `expenses_new` RENAME TO `expenses`")
+
+            connection.execSQL("CREATE INDEX IF NOT EXISTS `index_expenses_categoryId` ON `expenses` (`categoryId`)")
+            connection.execSQL("CREATE INDEX IF NOT EXISTS `index_expenses_receiptId` ON `expenses` (`receiptId`)")
+            connection.execSQL("CREATE INDEX IF NOT EXISTS `index_expenses_lineItemId` ON `expenses` (`lineItemId`)")
+        }
+    }

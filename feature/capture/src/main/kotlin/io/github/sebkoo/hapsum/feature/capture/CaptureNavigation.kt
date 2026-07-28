@@ -3,6 +3,7 @@ package io.github.sebkoo.hapsum.feature.capture
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.runtime.NavKey
+import io.github.sebkoo.hapsum.core.designsystem.CollectEffects
 import io.github.sebkoo.hapsum.core.model.ReceiptId
 import kotlinx.serialization.Serializable
 
