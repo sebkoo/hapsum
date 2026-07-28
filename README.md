@@ -4,6 +4,7 @@ Point your camera at a receipt. Hapsum reads it, sorts it, and explains your mon
 on-device. An AI receipt scanner and expense tracker in Kotlin, Jetpack Compose and MVI.
 
 [![CI](https://github.com/sebkoo/hapsum/actions/workflows/ci.yml/badge.svg)](https://github.com/sebkoo/hapsum/actions/workflows/ci.yml)
+[![Coverage](https://img.shields.io/endpoint?url=https%3A%2F%2Fgist.githubusercontent.com%2Fsebkoo%2Fac07feacc241fbdc26a0ea54b7138498%2Fraw%2Fhapsum-coverage.json)](docs/PROGRESS.md#L118)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 
 [![Kotlin](https://img.shields.io/badge/Kotlin-2.3.21-7F52FF.svg?logo=kotlin&logoColor=white)](https://kotlinlang.org)
@@ -16,6 +17,25 @@ on-device. An AI receipt scanner and expense tracker in Kotlin, Jetpack Compose 
 > You take a picture of a receipt. The phone reads it all by itself — it doesn't send your money
 > stuff to anyone — and it keeps a tidy list of what you bought. At the end of the month it tells
 > you the story of your spending.
+
+## See it work
+
+![Capture, confirm, ledger, and insights, one receipt end to end](docs/media/loop.gif)
+
+<table>
+<tr>
+<td align="center"><img src="docs/media/02-capture-framed.png" width="180" alt="Capture screen framing a synthetic receipt"/><br/>Capture</td>
+<td align="center"><img src="docs/media/03-confirm-suggestion.png" width="180" alt="Confirm screen with the Dining category pre-selected"/><br/>Confirm</td>
+<td align="center"><img src="docs/media/04-ledger-with-entry.png" width="180" alt="Ledger showing the saved expense"/><br/>Ledger</td>
+<td align="center"><img src="docs/media/05-insights.png" width="180" alt="Monthly insights summary"/><br/>Insights</td>
+</tr>
+</table>
+
+Captured on the Android emulator's virtual-scene camera against a synthetic receipt fixture —
+no real receipt or physical device involved. The category suggestion shown is the engine
+chain's deterministic floor (`RuleBasedEngine`); Gemini Nano refinement is gated to
+Pixel-9/10-class hardware (ADR-0006), so its on-device demo lands once supported hardware is
+available (backlog).
 
 ## Why I'm building this
 
@@ -90,7 +110,9 @@ One atomic commit per step — watch the history, that's the product.
   surface + `FreeTierEntitlements` bound in `DataModule`, zero consumers by design, ADR-0007
   accepted
 - ✅ 25. Kover ≥80% line coverage gate on ViewModels/domain, riding inside `scripts/verify.sh`
-- 🔜 26–27. Screenshots/README refresh → `v0.1.0` (full ladder in
+- ✅ 26. Screenshots/GIF + README refresh — captured on-device via the emulator's virtual-scene
+  camera, coverage badge live above
+- 🔜 27. `v0.1.0` tagged release with changelog (full ladder in
   [docs/PROGRESS.md](docs/PROGRESS.md))
 
 ## Tech stack and how it's tested
@@ -139,6 +161,12 @@ AI writes the first drafts. Tests, review boundaries, and the commit history dec
 The architecture's job is to make incorrect AI output cheap to detect and cheap to remove.
 Commits carry no per-commit AI trailers — this section and the committed harness are the
 disclosure.
+
+**AI-assisted, human-gated.** Every commit in this history is AI-drafted and human-reviewed
+before it reaches `origin` — the loop commits locally and stops; nothing pushes unread. ADRs are
+decided at phase gates, not by the assistant. `scripts/verify.sh` is green on every commit, no
+exceptions. CLAUDE.md and the ladder in [`docs/PROGRESS.md`](docs/PROGRESS.md) are the record of
+that process, not just a to-do list.
 
 ## Privacy stance
 

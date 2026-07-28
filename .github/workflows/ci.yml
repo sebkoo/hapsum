@@ -21,3 +21,10 @@ jobs:
       - uses: gradle/actions/setup-gradle@v6
       # The same script as local runs and the pre-commit hook — CI can never disagree.
       - run: ./scripts/verify.sh
+      # Badge-only: never blocks the gate above. Runs on main only, since the badge tracks
+      # main's coverage, not every PR branch's.
+      - if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        continue-on-error: true
+        env:
+          KOVER_BADGE_GIST_TOKEN: ${{ secrets.KOVER_BADGE_GIST_TOKEN }}
+        run: ./scripts/publish-coverage-badge.sh

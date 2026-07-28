@@ -125,12 +125,25 @@ product scope · the next stretch of the ladder.
   Coverage badge omitted — the human pre-work it depends on (gist +
   `KOVER_BADGE_GIST_TOKEN` repo secret) is not yet in place. Backlog, not this row: filler-free
   tests for `MviViewModel.requeue` and the `ExpenseMapping` branch gaps
-- [ ] 26. Screenshots/GIF + README refresh
+- [x] 26. Screenshots/GIF + README refresh — captured on a Pixel_9 AVD (API 37,
+  `google_apis_playstore`), `-camera-back virtualscene` fed a synthetic receipt PNG as a scene
+  poster; drove capture→confirm (`Dining` floor suggestion visible, `RuleBasedEngine` via the
+  "cafe" keyword)→ledger→insights plus empty states via adb, real ML Kit OCR end to end (no
+  fabricated data). Human-approved gate decision (row 26 context): the Nano-specific demo is
+  device-gated (ADR-0006) and stays deferred to real Pixel-9/10-class hardware — this row's
+  screenshots show the deterministic floor only, captioned as such. GIF assembled from the same
+  genuine app screenshots (ffmpeg palette-optimized) rather than a raw screen recording, since
+  the recording's second take hit OCR's own honest nondeterminism (a blank date field, disabled
+  Save) — truthful degradation per the triage law, just not the take chosen for the README.
+  Coverage badge wired this row: gist `ac07feacc241fbdc26a0ea54b7138498` created,
+  `KOVER_BADGE_GIST_TOKEN` fine-grained PAT set by the human, `scripts/publish-coverage-badge.sh`
+  + a continue-on-error main-push CI step publish it — badge now live next to CI in the README
 - [ ] 27. `v0.1.0` tagged release with changelog
 
 ## Queued badges (added only when truthful)
 
-- Kover coverage badge (shields endpoint from a gist, no external service) — commit 25
+- ~~Kover coverage badge (shields endpoint from a gist, no external service) — commit 25~~ live
+  as of commit 26
 - `github/v/release` + downloads badges + official Google Play badge — v0.1.0
 - Star-history widget + Releases APK download section — once v0.1.0 exists
 
@@ -169,3 +182,11 @@ product scope · the next stretch of the ladder.
   it yet (row 19 writes one `Expense` per receipt)
 - Suggestion-vs-correction history — recording when a user changes an engine's suggested
   category is an on-device learning signal and a candidate Pro-tier insight, not built yet
+- Real-device Gemini Nano demo capture — row 26's screenshots/GIF used the emulator's
+  deterministic-floor path only (ADR-0006's differentiator is device-gated to Pixel-9/10-class
+  hardware, which the emulator cannot represent); capture the on-device refinement once
+  supported hardware is available
+- `MviViewModel.requeue` + `ExpenseMapping` branch coverage — filler-free tests for the gaps
+  row 25's Kover gate introduction named but didn't close
+- Localized month names in Insights — `MonthSection` renders `summary.month.toString()`
+  (`YearMonth`'s ISO form, e.g. "2026-07") instead of a locale-formatted month name
