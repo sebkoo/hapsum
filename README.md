@@ -86,7 +86,10 @@ One atomic commit per step — watch the history, that's the product.
   fallback chain, confirm's two-phase suggestion, ADR-0006 accepted
 - ✅ 23. `:feature:insights` — monthly summary screen, timezone-free/currency-partitioned
   aggregation use case, Robolectric Compose-UI test
-- 🔜 24–27. Entitlements seam → coverage gate → `v0.1.0` (full ladder in
+- ✅ 24. `Entitlements` seam — closed `Entitlement` enum in `:core:model`, `Flow<Boolean>` read
+  surface + `FreeTierEntitlements` bound in `DataModule`, zero consumers by design, ADR-0007
+  accepted
+- 🔜 25–27. Coverage gate → screenshots/README refresh → `v0.1.0` (full ladder in
   [docs/PROGRESS.md](docs/PROGRESS.md))
 
 ## Tech stack and how it's tested

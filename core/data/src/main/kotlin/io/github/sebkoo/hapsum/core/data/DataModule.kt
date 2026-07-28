@@ -38,4 +38,8 @@ internal object DataModule {
     @Provides
     fun provideReceiptRepository(database: HapsumDatabase): ReceiptRepository =
         ReceiptRepositoryImpl(database.receiptDao())
+
+    @Provides
+    @Singleton
+    fun provideEntitlements(): Entitlements = FreeTierEntitlements
 }

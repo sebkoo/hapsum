@@ -111,7 +111,10 @@ product scope · the next stretch of the ladder.
   to a Robolectric Compose-UI test because Hapsum has no View/Compose hybrid boundary to justify
   a device-only androidTest. Rides along: `MoneyFormatterTest` negative-amount and cross-locale
   cases, plus its three comma-vs-period test-name typo fixes.
-- [ ] 24. `Entitlements` seam — ADR-0007 monetization without lock-in
+- [x] 24. `Entitlements` seam — ADR-0007 monetization without lock-in — closed `Entitlement`
+  enum in `:core:model` making ADR-0006's CloudEngine precondition checkable, `Flow<Boolean>`
+  read surface + `FreeTierEntitlements` bound in `DataModule` under `:core:data`, zero
+  consumers by design (no gate on any free feature), pure JVM ahead of row 25's Kover gate
 - [ ] 25. Kover gate ≥80% on ViewModels/domain + coverage badge
 - [ ] 26. Screenshots/GIF + README refresh
 - [ ] 27. `v0.1.0` tagged release with changelog
