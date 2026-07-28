@@ -28,7 +28,7 @@ product scope · the next stretch of the ladder.
 - [x] 10. `:core:designsystem` tokens/theme
 - [x] 11. `docs(harness): record the push-as-approval cadence in CLAUDE.md` — the loop commits
   locally and stops; a human review + push is the per-commit approval
-- [ ] 12. MVI runtime (`MviViewModel` base, reducer test harness) — ADR-0004 MVI×MVVM
+- [x] 12. MVI runtime (`MviViewModel` base, reducer test harness) — ADR-0004 MVI×MVVM
 - [ ] 13. `:feature:ledger` list screen + ViewModel tests (Turbine) + first Compose UI test
 - [ ] 14. CameraX capture screen
 - [ ] 15. ML Kit OCR + deterministic receipt parser (synthetic fixtures, golden tests)

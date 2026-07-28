@@ -68,8 +68,9 @@ One atomic commit per step — watch the history, that's the product.
 - ✅ 9. Room schema exercised against an in-memory database (Robolectric)
 - ✅ 10. `:core:designsystem` tokens/theme
 - ✅ 11. Push-as-approval cadence recorded in the AI harness
-- 🔜 12–22. MVI runtime → ledger feature → CameraX capture → OCR + parser → AI engines →
-  insights → entitlements seam → coverage gate → `v0.1.0` (full ladder in
+- ✅ 12. `:core:mvi` runtime + reducer test harness
+- 🔜 13–22. Ledger feature → CameraX capture → OCR + parser → AI engines → insights →
+  entitlements seam → coverage gate → `v0.1.0` (full ladder in
   [docs/PROGRESS.md](docs/PROGRESS.md))
 
 ## Tech stack and how it's tested
