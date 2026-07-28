@@ -29,7 +29,12 @@ Three hardenings, each closing a reviewed failure mode:
 - `sendEffect` is `trySend`-first: the non-overflow path completes synchronously on the calling
   thread — no dispatcher hop to lose at ViewModel teardown, no `Dispatchers.setMain` needed in
   tests. Only a full buffer (64 undelivered effects, a runaway emitter) falls back to a
-  suspending send in `viewModelScope`.
+  suspending send in `viewModelScope`. The fallback is delayed delivery, not loss: senders
+  suspended past the buffer resume FIFO as the collector drains — proven by the overflow test
+  in `MviViewModelTest` (70 collector-less emissions, all delivered in order). Effects still
+  undelivered at ViewModel clear die with it, but that end-of-life applies identically to the
+  64 buffered ones — it is the UI-lifetime scope of effects (see Consequences), not an
+  overflow-specific hole.
 - `onUndeliveredElement` re-queues the one in-flight effect a collector cancelled mid-handoff
   would otherwise eat (the backgrounding race). A re-queued effect re-enters at the tail and can
   arrive after later effects under a burst — accepted: reorder beats silent loss for one-shots.
@@ -81,8 +86,9 @@ gains `:core:mvi` (approved at this row's gate). `ReducerTestHarness` stays in t
 ## Consequences
 
 - Runtime tests are plain JVM: no Robolectric, and — because the effect path is synchronous in
-  the non-overflow case — no `Dispatchers.setMain`. State-only feature tests need no coroutine
-  machinery at all.
+  the non-overflow case — no `Dispatchers.setMain`, with one deliberate exception: the
+  overflow-path proof installs a test Main dispatcher to drive the suspending fallback.
+  State-only feature tests need no coroutine machinery at all.
 - Row-13 pattern, fixed now: repository observation starts in `init`/`viewModelScope`, results
   come back as nested `Internal` intent variants via `dispatch`, loading→content→error is a
   pure reduction. Feature tests drive internal intents through their real sources (a MockK'd

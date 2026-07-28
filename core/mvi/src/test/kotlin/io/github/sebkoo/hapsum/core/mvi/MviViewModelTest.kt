@@ -2,8 +2,12 @@ package io.github.sebkoo.hapsum.core.mvi
 
 import app.cash.turbine.test
 import kotlinx.coroutines.CoroutineStart
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.test.setMain
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertThrows
@@ -146,6 +150,32 @@ class MviViewModelTest {
             // assertion here, not a not-yet-dispatched false green.
             vm.effects.test {
                 expectNoEvents()
+            }
+        }
+
+    @Test
+    fun `sendEffect — buffer exhausted with no collector — overflow effects deliver in order, none dropped`() =
+        runTest {
+            // The only runtime test that needs a Main dispatcher: it deliberately drives the
+            // suspending fallback, which launches in viewModelScope (Main.immediate).
+            Dispatchers.setMain(StandardTestDispatcher(testScheduler))
+            try {
+                val vm = CounterViewModel()
+
+                // Channel.BUFFERED resolves to 64 unless the JVM-wide
+                // kotlinx.coroutines.channels.defaultBuffer property overrides it; 70 overshoots
+                // so the tail exercises the suspending fallback. If the property were ever
+                // raised past 70, this test degrades to covering only the trySend path — it
+                // does not false-fail.
+                repeat(70) { vm.onIntent(CounterIntent.Bump) }
+
+                vm.effects.test {
+                    repeat(70) { i ->
+                        assertEquals(CounterEffect.Announced(i + 1), awaitItem())
+                    }
+                }
+            } finally {
+                Dispatchers.resetMain()
             }
         }
 
