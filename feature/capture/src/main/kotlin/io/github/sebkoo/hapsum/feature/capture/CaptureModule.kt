@@ -19,4 +19,12 @@ internal object CaptureModule {
     fun provideCameraCapture(
         @ApplicationContext context: Context,
     ): CameraCapture = CameraXCapture(context)
+
+    @Provides
+    fun provideOcrEngine(
+        @ApplicationContext context: Context,
+    ): OcrEngine = MlKitOcrEngine(context)
+
+    @Provides
+    fun provideReceiptCurrencyResolver(): ReceiptCurrencyResolver = ReceiptCurrencyResolver { defaultReceiptCurrency() }
 }

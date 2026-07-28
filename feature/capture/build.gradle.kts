@@ -53,6 +53,8 @@ dependencies {
     implementation(libs.camerax.lifecycle)
     implementation(libs.camerax.compose)
 
+    implementation(libs.mlkit.text.recognition)
+
     testImplementation(project(":core:testing"))
     testImplementation(libs.junit)
     testImplementation(libs.mockk)

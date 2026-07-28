@@ -1,0 +1,7 @@
+SYNTH MARKT
+Musterstrasse 5
+15.07.2026
+Brot 2,49
+Milch 1,19
+Kaese 4,99
+TOTAL 8,67

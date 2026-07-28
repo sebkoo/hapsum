@@ -46,3 +46,33 @@ val MIGRATION_1_2: Migration =
             connection.execSQL("CREATE INDEX IF NOT EXISTS `index_expenses_receiptId` ON `expenses` (`receiptId`)")
         }
     }
+
+/**
+ * Adds the OCR parse output (row 17): seven nullable parsed-header columns on `receipts` —
+ * plain `ADD COLUMN`s, no table recreate this time — plus the `line_items` table the row-14
+ * entity KDoc deferred to exactly this row. Pre-v3 receipt rows keep NULL parsed fields,
+ * which the domain reads as "the parser never ran", not as zeros. `line_items`' `CREATE
+ * TABLE` is copied verbatim from the generated `schemas/.../3.json`, same discipline as
+ * [MIGRATION_1_2].
+ */
+val MIGRATION_2_3: Migration =
+    object : Migration(2, 3) {
+        override suspend fun migrate(connection: SQLiteConnection) {
+            connection.execSQL("ALTER TABLE `receipts` ADD COLUMN `parsedMerchant` TEXT")
+            connection.execSQL("ALTER TABLE `receipts` ADD COLUMN `parsedMerchantConfidence` TEXT")
+            connection.execSQL("ALTER TABLE `receipts` ADD COLUMN `parsedDate` INTEGER")
+            connection.execSQL("ALTER TABLE `receipts` ADD COLUMN `parsedDateConfidence` TEXT")
+            connection.execSQL("ALTER TABLE `receipts` ADD COLUMN `parsedTotalMinorUnits` INTEGER")
+            connection.execSQL("ALTER TABLE `receipts` ADD COLUMN `parsedTotalCurrency` TEXT")
+            connection.execSQL("ALTER TABLE `receipts` ADD COLUMN `parsedTotalConfidence` TEXT")
+
+            connection.execSQL(
+                "CREATE TABLE IF NOT EXISTS `line_items` (`id` TEXT NOT NULL, `receiptId` TEXT NOT NULL, " +
+                    "`position` INTEGER NOT NULL, `description` TEXT NOT NULL, " +
+                    "`amountMinorUnits` INTEGER NOT NULL, `currencyIsoCode` TEXT NOT NULL, PRIMARY KEY(`id`), " +
+                    "FOREIGN KEY(`receiptId`) REFERENCES `receipts`(`id`) " +
+                    "ON UPDATE RESTRICT ON DELETE RESTRICT )",
+            )
+            connection.execSQL("CREATE INDEX IF NOT EXISTS `index_line_items_receiptId` ON `line_items` (`receiptId`)")
+        }
+    }

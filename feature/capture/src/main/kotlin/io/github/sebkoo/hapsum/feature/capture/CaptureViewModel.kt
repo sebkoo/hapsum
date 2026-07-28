@@ -6,10 +6,13 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import io.github.sebkoo.hapsum.core.data.ReceiptRepository
+import io.github.sebkoo.hapsum.core.model.LineItem
+import io.github.sebkoo.hapsum.core.model.LineItemId
 import io.github.sebkoo.hapsum.core.model.Receipt
 import io.github.sebkoo.hapsum.core.model.ReceiptId
 import io.github.sebkoo.hapsum.core.mvi.DispatcherProvider
 import io.github.sebkoo.hapsum.core.mvi.MviViewModel
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
 import java.io.File
 import java.io.IOException
@@ -22,7 +25,9 @@ class CaptureViewModel
     constructor(
         @param:ApplicationContext private val appContext: Context,
         private val cameraCapture: CameraCapture,
+        private val ocrEngine: OcrEngine,
         private val receiptRepository: ReceiptRepository,
+        private val receiptCurrency: ReceiptCurrencyResolver,
         private val dispatchers: DispatcherProvider,
     ) : MviViewModel<CaptureUiState, CaptureUiIntent, CaptureUiEffect>(
             initialState = CaptureUiState(),
@@ -51,7 +56,7 @@ class CaptureViewModel
                 }
 
                 is CaptureUiIntent.Internal.PhotoSaved -> {
-                    saveReceipt(intent.receiptId, intent.imageRef)
+                    recognizeAndSaveReceipt(intent.receiptId, intent.imageRef)
                 }
 
                 is CaptureUiIntent.Internal.ReceiptSaved -> {
@@ -77,18 +82,30 @@ class CaptureViewModel
             }
         }
 
-        private fun saveReceipt(
+        private fun recognizeAndSaveReceipt(
             receiptId: ReceiptId,
             imageRef: String,
         ) {
             viewModelScope.launch(dispatchers.io) {
+                val ocrText = recognizeOrEmpty(File(appContext.filesDir, imageRef))
+                val parsed = parseReceipt(ocrText, receiptCurrency.resolve())
                 val receipt =
                     Receipt(
                         id = receiptId,
                         imageRef = imageRef,
-                        ocrText = "",
-                        parseConfidence = 0f,
-                        lineItems = emptyList(),
+                        ocrText = ocrText.raw,
+                        merchant = parsed.merchant,
+                        purchasedAt = parsed.purchasedAt,
+                        total = parsed.total,
+                        // Id assignment is the effectful step the pure parser leaves to this flow.
+                        lineItems =
+                            parsed.lineItems.map { item ->
+                                LineItem(
+                                    id = LineItemId(UUID.randomUUID().toString()),
+                                    description = item.description,
+                                    amount = item.amount,
+                                )
+                            },
                     )
                 try {
                     receiptRepository.save(receipt)
@@ -98,6 +115,20 @@ class CaptureViewModel
                 }
             }
         }
+
+        /**
+         * OCR is best-effort by design: the JPEG evidence is already on disk, so a recognition
+         * failure degrades to an unparsed receipt — empty text, all-null fields, what the future
+         * confirm screen renders as "fill everything in" — never a lost capture.
+         */
+        private suspend fun recognizeOrEmpty(imageFile: File): OcrText =
+            try {
+                ocrEngine.recognize(imageFile)
+            } catch (cancellation: CancellationException) {
+                throw cancellation
+            } catch (_: Exception) {
+                OcrText(emptyList())
+            }
 
         companion object {
             /** The screen's single reduction path — the exact value ReducerTestHarness folds with. */

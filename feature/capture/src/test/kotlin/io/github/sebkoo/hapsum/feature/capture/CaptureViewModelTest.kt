@@ -6,9 +6,15 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.test.core.app.ApplicationProvider
 import app.cash.turbine.test
 import io.github.sebkoo.hapsum.core.data.ReceiptRepository
+import io.github.sebkoo.hapsum.core.model.CurrencyCode
+import io.github.sebkoo.hapsum.core.model.Money
+import io.github.sebkoo.hapsum.core.model.ParseConfidence
+import io.github.sebkoo.hapsum.core.model.ParsedField
+import io.github.sebkoo.hapsum.core.model.Receipt
 import io.github.sebkoo.hapsum.core.mvi.DispatcherProvider
 import io.mockk.coEvery
 import io.mockk.mockk
+import io.mockk.slot
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
@@ -17,6 +23,7 @@ import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -49,24 +56,40 @@ private class FakeCameraCapture(
     }
 }
 
+/** Never exercises ML Kit — [MlKitOcrEngine] is platform glue with zero coverage by design. */
+private class FakeOcrEngine(
+    private val result: OcrText = OcrText(emptyList()),
+    private val error: Exception? = null,
+) : OcrEngine {
+    override suspend fun recognize(imageFile: File): OcrText {
+        error?.let { throw it }
+        return result
+    }
+}
+
 /**
  * Robolectric only for a real [Context.getFilesDir] — `capturePhoto` writes real receipt evidence
- * to app-private storage (ADR-0003), never a MockK-stubbed path. Camera hardware itself is
- * faked via [FakeCameraCapture]; [CameraXCapture] carries zero test coverage by design.
+ * to app-private storage (ADR-0003), never a MockK-stubbed path. Camera hardware and ML Kit are
+ * faked via [FakeCameraCapture]/[FakeOcrEngine]; their CameraX/ML Kit implementations carry zero
+ * test coverage by design.
  */
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [35])
 class CaptureViewModelTest {
     private val context = ApplicationProvider.getApplicationContext<Context>()
+    private val usd = CurrencyCode.of("USD")
 
     private fun TestScope.viewModel(
         cameraCapture: CameraCapture,
         receiptRepository: ReceiptRepository,
+        ocrEngine: OcrEngine = FakeOcrEngine(),
     ): CaptureViewModel =
         CaptureViewModel(
             appContext = context,
             cameraCapture = cameraCapture,
+            ocrEngine = ocrEngine,
             receiptRepository = receiptRepository,
+            receiptCurrency = ReceiptCurrencyResolver { usd },
             dispatchers = TestDispatcherProvider(StandardTestDispatcher(testScheduler)),
         )
 
@@ -97,6 +120,47 @@ class CaptureViewModelTest {
             val file = cameraCapture.capturedFile
             assertEquals(File(context.filesDir, "receipts"), file?.parentFile)
             assertTrue(file!!.name.endsWith(".jpg"))
+        }
+
+    @Test
+    fun `capture photo clicked — ocr text parses — saved receipt carries text, header fields, line items`() =
+        runTest {
+            val saved = slot<Receipt>()
+            val repository = mockk<ReceiptRepository> { coEvery { save(capture(saved)) } returns Unit }
+            val ocrEngine = FakeOcrEngine(OcrText(listOf("SYNTH CAFE", "Coffee 4.50", "TOTAL 4.50")))
+            val vm = viewModel(FakeCameraCapture(), repository, ocrEngine)
+
+            vm.onIntent(CaptureUiIntent.CapturePhotoClicked)
+            advanceUntilIdle()
+
+            val receipt = saved.captured
+            assertEquals("SYNTH CAFE\nCoffee 4.50\nTOTAL 4.50", receipt.ocrText)
+            assertEquals(ParsedField("SYNTH CAFE", ParseConfidence.LOW), receipt.merchant)
+            assertEquals(ParsedField(Money(4_50, usd), ParseConfidence.HIGH), receipt.total)
+            assertEquals(listOf("Coffee"), receipt.lineItems.map { it.description })
+            assertEquals(listOf(Money(4_50, usd)), receipt.lineItems.map { it.amount })
+        }
+
+    @Test
+    fun `capture photo clicked — ocr engine throws — receipt still saved unparsed, capture not lost`() =
+        runTest {
+            val saved = slot<Receipt>()
+            val repository = mockk<ReceiptRepository> { coEvery { save(capture(saved)) } returns Unit }
+            val ocrEngine = FakeOcrEngine(error = IOException("unreadable image"))
+            val vm = viewModel(FakeCameraCapture(), repository, ocrEngine)
+
+            vm.effects.test {
+                vm.onIntent(CaptureUiIntent.CapturePhotoClicked)
+                advanceUntilIdle()
+
+                assertTrue(awaitItem() is CaptureUiEffect.ReceiptCaptured)
+            }
+            val receipt = saved.captured
+            assertEquals("", receipt.ocrText)
+            assertNull(receipt.merchant)
+            assertNull(receipt.purchasedAt)
+            assertNull(receipt.total)
+            assertEquals(emptyList<Any>(), receipt.lineItems)
         }
 
     @Test

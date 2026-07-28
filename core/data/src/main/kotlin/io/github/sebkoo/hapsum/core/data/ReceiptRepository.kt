@@ -14,8 +14,8 @@ class ReceiptRepositoryImpl(
     private val dao: ReceiptDao,
 ) : ReceiptRepository {
     override suspend fun save(receipt: Receipt) {
-        dao.insert(receipt.toEntity())
+        dao.insertWithLineItems(receipt.toEntity(), receipt.toLineItemEntities())
     }
 
-    override suspend fun getById(id: ReceiptId): Receipt? = dao.getById(id.value)?.toDomain()
+    override suspend fun getById(id: ReceiptId): Receipt? = dao.getByIdWithLineItems(id.value)?.toDomain()
 }

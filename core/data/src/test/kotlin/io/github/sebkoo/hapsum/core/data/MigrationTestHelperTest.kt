@@ -86,4 +86,28 @@ class MigrationTestHelperTest {
             assertTrue("expected the categoryId FK to still reject an unknown category", caught != null)
             v2.close()
         }
+
+    @Test
+    fun `migrate 2 to 3 — v2 receipt — survives with null parsed fields and an empty line_items table`() =
+        runTest {
+            val v2 = helper.createDatabase(2)
+            v2.execSQL(
+                "INSERT INTO receipts (id, imageRef, ocrText, parseConfidence) " +
+                    "VALUES ('r1', 'receipts/r1.jpg', 'TOTAL 5.00', 0.5)",
+            )
+            v2.close()
+
+            val v3 = helper.runMigrationsAndValidate(3, listOf(MIGRATION_2_3))
+
+            v3.prepare("SELECT parsedMerchant, parsedTotalMinorUnits FROM receipts WHERE id = 'r1'").use { statement ->
+                assertTrue("expected the v2 receipt row to survive the migration", statement.step())
+                assertTrue("expected parsedMerchant NULL on a pre-v3 row", statement.isNull(0))
+                assertTrue("expected parsedTotalMinorUnits NULL on a pre-v3 row", statement.isNull(1))
+            }
+            v3.prepare("SELECT COUNT(*) FROM line_items").use { statement ->
+                assertTrue(statement.step())
+                assertEquals(0L, statement.getLong(0))
+            }
+            v3.close()
+        }
 }

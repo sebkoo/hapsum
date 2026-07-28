@@ -74,7 +74,9 @@ One atomic commit per step — watch the history, that's the product.
 - ✅ 15. Hilt DI — `AppContainer`/`HapsumDataContainer` retired, `LedgerViewModel` `@HiltViewModel`
 - ✅ 16. `:feature:capture` — CameraX preview + permission flow, `ReceiptRepository`, first
   effect-emitting screen
-- 🔜 17–18. OCR + parser → on-device rule-based categorizer
+- ✅ 17. ML Kit OCR behind a seam + deterministic parser, golden-tested on synthetic fixtures —
+  schema v3 (parsed fields + line items)
+- 🔜 18. On-device rule-based categorizer
 - 🔜 19–24. Gemini Nano → insights → entitlements seam → coverage gate → `v0.1.0` (full ladder in
   [docs/PROGRESS.md](docs/PROGRESS.md))
 

@@ -1,0 +1,11 @@
+MAPLE STREET CAFE
+123 Synthetic Ave
+07/04/2026 09:41
+Flat White 4.50
+Blueberry Muffin 3.75
+Avocado Toast 11.00
+SUBTOTAL 19.25
+TAX 8.875% 1.71
+TOTAL 20.96
+CARD **** 1111
+THANK YOU

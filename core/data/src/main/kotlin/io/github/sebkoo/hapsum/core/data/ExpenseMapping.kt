@@ -5,8 +5,11 @@ import io.github.sebkoo.hapsum.core.model.CategoryId
 import io.github.sebkoo.hapsum.core.model.CurrencyCode
 import io.github.sebkoo.hapsum.core.model.Expense
 import io.github.sebkoo.hapsum.core.model.ExpenseId
+import io.github.sebkoo.hapsum.core.model.LineItem
 import io.github.sebkoo.hapsum.core.model.LineItemId
 import io.github.sebkoo.hapsum.core.model.Money
+import io.github.sebkoo.hapsum.core.model.ParseConfidence
+import io.github.sebkoo.hapsum.core.model.ParsedField
 import io.github.sebkoo.hapsum.core.model.Receipt
 import io.github.sebkoo.hapsum.core.model.ReceiptId
 import java.time.LocalDate
@@ -51,14 +54,58 @@ internal fun Receipt.toEntity(): ReceiptEntity =
         imageRef = imageRef,
         ocrText = ocrText,
         parseConfidence = parseConfidence,
+        parsedMerchant = merchant?.value,
+        parsedMerchantConfidence = merchant?.confidence?.name,
+        parsedDate = purchasedAt?.value?.toEpochDay(),
+        parsedDateConfidence = purchasedAt?.confidence?.name,
+        parsedTotalMinorUnits = total?.value?.minorUnits,
+        parsedTotalCurrency = total?.value?.currency?.isoCode,
+        parsedTotalConfidence = total?.confidence?.name,
     )
 
-/** Line items never round-trip here — no `LineItemEntity` table exists yet (row 17). */
-internal fun ReceiptEntity.toDomain(): Receipt =
+internal fun Receipt.toLineItemEntities(): List<LineItemEntity> =
+    lineItems.mapIndexed { index, item ->
+        LineItemEntity(
+            id = item.id.value,
+            receiptId = id.value,
+            position = index,
+            description = item.description,
+            amountMinorUnits = item.amount.minorUnits,
+            currencyIsoCode = item.amount.currency.isoCode,
+        )
+    }
+
+internal fun ReceiptWithLineItems.toDomain(): Receipt =
     Receipt(
-        id = ReceiptId(id),
-        imageRef = imageRef,
-        ocrText = ocrText,
-        parseConfidence = parseConfidence,
-        lineItems = emptyList(),
+        id = ReceiptId(receipt.id),
+        imageRef = receipt.imageRef,
+        ocrText = receipt.ocrText,
+        merchant = parsedField(receipt.parsedMerchant, receipt.parsedMerchantConfidence),
+        purchasedAt = parsedField(receipt.parsedDate?.let(LocalDate::ofEpochDay), receipt.parsedDateConfidence),
+        total =
+            parsedField(
+                receipt.parsedTotalMinorUnits?.let { minorUnits ->
+                    receipt.parsedTotalCurrency?.let { iso -> Money(minorUnits, CurrencyCode.of(iso)) }
+                },
+                receipt.parsedTotalConfidence,
+            ),
+        lineItems =
+            lineItems.map { item ->
+                LineItem(
+                    id = LineItemId(item.id),
+                    description = item.description,
+                    amount = Money(item.amountMinorUnits, CurrencyCode.of(item.currencyIsoCode)),
+                )
+            },
     )
+
+/** Value/confidence columns are NULL as a unit (see [ReceiptEntity]) — either both map or neither. */
+private fun <T : Any> parsedField(
+    value: T?,
+    confidence: String?,
+): ParsedField<T>? =
+    if (value == null || confidence == null) {
+        null
+    } else {
+        ParsedField(value, ParseConfidence.valueOf(confidence))
+    }

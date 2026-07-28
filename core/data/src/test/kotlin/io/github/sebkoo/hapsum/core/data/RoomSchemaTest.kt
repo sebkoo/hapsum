@@ -8,6 +8,7 @@ import app.cash.turbine.test
 import io.github.sebkoo.hapsum.core.model.CategoryId
 import io.github.sebkoo.hapsum.core.testing.CategoryFixtures
 import io.github.sebkoo.hapsum.core.testing.ExpenseFixtures
+import io.github.sebkoo.hapsum.core.testing.ReceiptFixtures
 import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Assert.assertEquals
@@ -121,5 +122,44 @@ class RoomSchemaTest {
                 assertEquals(listOf(ExpenseWithCategory(expense, category)), rows.map { it.toDomain() })
                 cancelAndIgnoreRemainingEvents()
             }
+        }
+
+    @Test
+    fun `receiptDao insertWithLineItems — round-trips parsed fields and ordered line items`() =
+        runTest {
+            val receiptDao = db.receiptDao()
+            val receipt = ReceiptFixtures.synthetic()
+
+            receiptDao.insertWithLineItems(receipt.toEntity(), receipt.toLineItemEntities())
+
+            assertEquals(receipt, receiptDao.getByIdWithLineItems(receipt.id.value)?.toDomain())
+        }
+
+    @Test
+    fun `receiptDao insertLineItems — receiptId references no row — throws, FK RESTRICT enforced`() =
+        runTest {
+            val receiptDao = db.receiptDao()
+            val orphan =
+                LineItemEntity(
+                    id = "li-orphan",
+                    receiptId = "no-such-receipt",
+                    position = 0,
+                    description = "Ghost",
+                    amountMinorUnits = 1_00,
+                    currencyIsoCode = "USD",
+                )
+
+            var caught: Throwable? = null
+            try {
+                receiptDao.insertLineItems(listOf(orphan))
+            } catch (t: Throwable) {
+                caught = t
+            }
+
+            assertNotNull("expected FK RESTRICT to reject a line item with a nonexistent receiptId", caught)
+            val isForeignKeyViolation =
+                generateSequence(caught) { it.cause }
+                    .any { it.message?.contains("FOREIGN KEY", ignoreCase = true) == true }
+            assertTrue("expected a foreign key violation, got: $caught", isForeignKeyViolation)
         }
 }

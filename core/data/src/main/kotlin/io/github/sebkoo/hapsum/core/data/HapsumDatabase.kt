@@ -4,8 +4,8 @@ import androidx.room3.Database
 import androidx.room3.RoomDatabase
 
 @Database(
-    entities = [ExpenseEntity::class, CategoryEntity::class, ReceiptEntity::class],
-    version = 2,
+    entities = [ExpenseEntity::class, CategoryEntity::class, ReceiptEntity::class, LineItemEntity::class],
+    version = 3,
     // Explicit, not relying on the default: migration discipline starts at schema v1 (ADR-0003).
     exportSchema = true,
 )

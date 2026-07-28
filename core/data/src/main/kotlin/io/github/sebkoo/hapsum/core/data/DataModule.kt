@@ -24,7 +24,7 @@ internal object DataModule {
     ): HapsumDatabase =
         Room
             .databaseBuilder(context, HapsumDatabase::class.java, "hapsum.db")
-            .addMigrations(MIGRATION_1_2)
+            .addMigrations(MIGRATION_1_2, MIGRATION_2_3)
             .build()
 
     @Provides

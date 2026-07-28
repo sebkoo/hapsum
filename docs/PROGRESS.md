@@ -54,8 +54,18 @@ product scope · the next stretch of the ladder.
   failure to prevent — no transaction wraps capture into an Expense; confirm's Expense +
   line-item write is the `@Transaction`. Unconfirmed receipts stay invisible in MVP (roadmap
   note below, not this row's scope)
-- [ ] 17. `feat(ocr): ML Kit OCR + deterministic receipt parser` — against synthetic golden
-  fixtures
+- [x] 17. `feat(ocr): ML Kit OCR + deterministic receipt parser` — against synthetic golden
+  fixtures. The determinism boundary: ML Kit sits behind an `OcrEngine` seam (thin adapter, zero
+  coverage by design — the `CameraCapture` trade), and `parseReceipt` is a pure JVM function from
+  OCR text structure to `ParsedReceipt`, golden-tested on committed synthetic OCR-text fixtures —
+  never image→parse end-to-end, which is device- and ML-Kit-model-version-dependent. Amounts
+  parse into `Money` minor units via the single app-default currency (device locale at receipt
+  creation), respecting that currency's ISO-4217 fraction digits — no hardcoded two decimals.
+  Confidence is per-field (`ParsedField` HIGH/LOW, absent = null) so the future confirm screen
+  can highlight uncertain fields; schema v3 adds the parsed header columns and the `line_items`
+  table (v2→v3 migration, `MigrationTestHelper`-proven). Scope ends at capture storing ocrText +
+  parse output on the `Receipt` — the confirm screen is a discovered missing ladder row, flagged
+  below for the Phase 3 gate
 - [ ] 18. `feat(ai): RuleBasedEngine categorizer` + tests
 
 **Phase gate — human review before Phase 3.**
@@ -88,3 +98,12 @@ product scope · the next stretch of the ladder.
 - Unconfirmed-receipts inbox and cleanup policy — capture (commit 16) can leave a `Receipt` with
   no `Expense` (a designed state, not a bug); a UI to surface or a policy to expire these is
   future scope, not commit 16's
+- **Confirm screen is a discovered missing ladder row (flagged at commit 17 for the Phase 3
+  gate):** capture now stores parsed fields with per-field confidence exactly so a confirm
+  screen can prefill/highlight them and write the `Expense` + line-item join in one
+  `@Transaction` — no ladder row builds that screen yet; adding one is a human act at the gate
+- Multi-currency detection — commit 17 parses every amount in the single app-default currency
+  (device locale at receipt creation); reading the currency off the receipt text itself is
+  future scope
+- OCR is Latin-script only (bundled ML Kit model) — other script packs (e.g. Korean) are a
+  pinned-dependency decision for a later row
