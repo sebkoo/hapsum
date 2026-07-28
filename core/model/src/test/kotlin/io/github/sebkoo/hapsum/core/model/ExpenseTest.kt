@@ -25,18 +25,18 @@ class ExpenseTest {
     }
 
     @Test
-    fun `constructor — entered manually without a receipt — receiptId and lineItemId are null`() {
+    fun `constructor — derived from a receipt total, not a specific line — lineItemId is null`() {
         val expense =
             Expense(
                 id = ExpenseId("e2"),
                 amount = Money(10_00, usd),
                 categoryId = CategoryId("transport"),
                 date = LocalDate.of(2026, 7, 27),
-                receiptId = null,
+                receiptId = ReceiptId("r2"),
                 lineItemId = null,
             )
 
-        assertNull(expense.receiptId)
+        assertEquals(ReceiptId("r2"), expense.receiptId)
         assertNull(expense.lineItemId)
     }
 }

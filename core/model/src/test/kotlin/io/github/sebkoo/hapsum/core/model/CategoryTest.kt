@@ -18,4 +18,16 @@ class CategoryTest {
         assertNotEquals(original, renamed)
         assertEquals(original.id, renamed.id)
     }
+
+    @Test
+    fun `constructor — default — is not archived`() {
+        val category = Category(id = CategoryId("groceries"), name = "Groceries")
+
+        assertEquals(false, category.isArchived)
+    }
+
+    @Test
+    fun `uncategorized — id — is a stable well-known value`() {
+        assertEquals(CategoryId("uncategorized"), CategoryId.UNCATEGORIZED)
+    }
 }

@@ -8,14 +8,16 @@ value class ExpenseId(
 )
 
 /**
- * An editable ledger entry. May originate from a [Receipt] line item (both ids set) or be
- * entered manually (both null) — [Receipt] stays immutable evidence either way.
+ * An editable ledger entry. Every expense originates from a [Receipt] — `receiptId` is never
+ * null in MVP; manual entry without a receipt is a roadmap item that needs its own migration
+ * and ADR, not a weakened invariant here (ADR-0003). `lineItemId` is null when the expense
+ * represents the receipt's total rather than one specific parsed line.
  */
 data class Expense(
     val id: ExpenseId,
     val amount: Money,
     val categoryId: CategoryId,
     val date: LocalDate,
-    val receiptId: ReceiptId?,
+    val receiptId: ReceiptId,
     val lineItemId: LineItemId?,
 )

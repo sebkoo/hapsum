@@ -14,8 +14,8 @@ object ExpenseFixtures {
         amount: Money = MoneyFixtures.usd(2_50),
         categoryId: CategoryId = CategoryFixtures.groceries().id,
         date: LocalDate = LocalDate.of(2026, 1, 1),
-        receiptId: ReceiptId? = null,
-        lineItemId: LineItemId? = null,
+        receiptId: ReceiptId = ReceiptId("fixture-receipt-1"),
+        lineItemId: LineItemId? = LineItemId("fixture-line-1"),
     ): Expense =
         Expense(
             id = id,

@@ -19,16 +19,16 @@ product scope · the next stretch of the ladder.
 ## Phase 1+ — planned, not started
 
 - [x] 7. `:core:model` + `:core:testing` carve-out
-- [ ] 8. Room schema + repository (offline-first), MockK'd DAO tests
+- [x] 8. Room schema + repository (offline-first), MockK'd DAO tests — ADR-0003 Room schema
 - [ ] 9. `:core:designsystem` tokens/theme
-- [ ] 10. MVI runtime (`MviViewModel` base, reducer test harness) — ADR-0002 MVI×MVVM
+- [ ] 10. MVI runtime (`MviViewModel` base, reducer test harness) — ADR-0004 MVI×MVVM
 - [ ] 11. `:feature:ledger` list screen + ViewModel tests (Turbine) + first Compose UI test
 - [ ] 12. CameraX capture screen
 - [ ] 13. ML Kit OCR + deterministic receipt parser (synthetic fixtures, golden tests)
 - [ ] 14. `RuleBasedEngine` categorizer + tests
-- [ ] 15. `GeminiNanoEngine` behind capability check — ADR-0003 on-device-first AI
+- [ ] 15. `GeminiNanoEngine` behind capability check — ADR-0005 on-device-first AI
 - [ ] 16. `:feature:insights` monthly summary + Espresso interop test
-- [ ] 17. `Entitlements` seam — ADR-0004 monetization without lock-in
+- [ ] 17. `Entitlements` seam — ADR-0006 monetization without lock-in
 - [ ] 18. Kover gate ≥80% on ViewModels/domain + coverage badge
 - [ ] 19. Screenshots/GIF + README refresh
 - [ ] 20. `v0.1.0` tagged release with changelog
@@ -45,3 +45,7 @@ product scope · the next stretch of the ladder.
 - Add `/review` and `/release` commands when their work exists
 - Split verify.sh into `verify-*.sh` stages at ~50 lines
 - Extract the `.claude/` + `scripts/` + `docs/` skeleton into a template repo after v0.1.0
+- Manual expense entry without a receipt — needs `receiptId` to become nullable, a real
+  migration, and its own ADR (ADR-0003 deliberately keeps it `NOT NULL` for MVP)
+- Per-line-item categorization — today an `Expense` has one `CategoryId`; splitting a single
+  receipt's line items across categories is deferred (ADR-0003)
