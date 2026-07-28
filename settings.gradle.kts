@@ -22,3 +22,5 @@ dependencyResolutionManagement {
 
 rootProject.name = "hapsum"
 include(":app")
+include(":core:model")
+include(":core:testing")

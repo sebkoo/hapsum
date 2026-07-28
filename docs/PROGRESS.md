@@ -18,7 +18,7 @@ product scope · the next stretch of the ladder.
 
 ## Phase 1+ — planned, not started
 
-- [ ] 7. `:core:model` + `:core:testing` carve-out
+- [x] 7. `:core:model` + `:core:testing` carve-out
 - [ ] 8. Room schema + repository (offline-first), MockK'd DAO tests
 - [ ] 9. `:core:designsystem` tokens/theme
 - [ ] 10. MVI runtime (`MviViewModel` base, reducer test harness) — ADR-0002 MVI×MVVM

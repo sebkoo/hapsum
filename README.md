@@ -63,8 +63,8 @@ One atomic commit per step — watch the history, that's the product.
 - ✅ 4. AI harness: CLAUDE.md, slash commands, progress board
 - ✅ 5. CI running the same gate as local builds
 - ✅ 6. README v1
-- 🔜 7. `:core:model` + `:core:testing` carve-out
-- 8–20. Room ledger → CameraX capture → OCR + parser → AI engines → insights →
+- ✅ 7. `:core:model` + `:core:testing` carve-out
+- 🔜 8–20. Room ledger → CameraX capture → OCR + parser → AI engines → insights →
   entitlements seam → coverage gate → `v0.1.0` (full ladder in
   [docs/PROGRESS.md](docs/PROGRESS.md))
 
