@@ -70,9 +70,9 @@ One atomic commit per step — watch the history, that's the product.
 - ✅ 11. Push-as-approval cadence recorded in the AI harness
 - ✅ 12. `:core:mvi` runtime + reducer test harness
 - ✅ 13. `:feature:ledger` list screen — first Compose UI test, Nav3 graph in `:app`
-- 🔜 14–23. Receipt persistence (schema v2) → CameraX capture → OCR + parser → AI engines →
-  insights → entitlements seam → coverage gate → `v0.1.0` (full ladder in
-  [docs/PROGRESS.md](docs/PROGRESS.md))
+- ✅ 14. Receipt persistence + schema v2 — the first Room migration, `MigrationTestHelper`-proven
+- 🔜 15–23. CameraX capture → OCR + parser → AI engines → insights → entitlements seam →
+  coverage gate → `v0.1.0` (full ladder in [docs/PROGRESS.md](docs/PROGRESS.md))
 
 ## Tech stack and how it's tested
 

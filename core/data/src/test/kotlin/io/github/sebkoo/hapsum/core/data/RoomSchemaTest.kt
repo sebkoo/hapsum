@@ -106,10 +106,14 @@ class RoomSchemaTest {
         runTest {
             val categoryDao = db.categoryDao()
             val expenseDao = db.expenseDao()
+            val receiptDao = db.receiptDao()
             val category = CategoryFixtures.groceries()
             val expense = ExpenseFixtures.synthetic(categoryId = category.id)
 
             categoryDao.insertDefaults(listOf(CategoryEntity(id = category.id.value, name = category.name)))
+            receiptDao.insert(
+                ReceiptEntity(id = expense.receiptId.value, imageRef = "", ocrText = "", parseConfidence = 0f),
+            )
             expenseDao.insert(expense.toEntity())
 
             expenseDao.observeAllWithCategory().test {

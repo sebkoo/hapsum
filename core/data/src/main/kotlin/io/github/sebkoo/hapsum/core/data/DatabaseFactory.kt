@@ -19,4 +19,5 @@ class HapsumDataContainer(
 internal fun createHapsumDatabase(context: Context): HapsumDatabase =
     Room
         .databaseBuilder(context, HapsumDatabase::class.java, "hapsum.db")
+        .addMigrations(MIGRATION_1_2)
         .build()

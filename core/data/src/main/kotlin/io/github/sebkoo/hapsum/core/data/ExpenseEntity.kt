@@ -8,9 +8,9 @@ import androidx.room3.PrimaryKey
 /**
  * `categoryId` is RESTRICTed to an existing [CategoryEntity] row, archived or not — the
  * database refuses to let a referenced category disappear (ADR-0003), on top of [CategoryDao]
- * not exposing a hard delete at all. `receiptId` is NOT NULL: every expense originates from a
- * receipt in MVP (ADR-0003); `lineItemId` is nullable, since an expense may represent the
- * receipt's total rather than one specific parsed line.
+ * not exposing a hard delete at all. `receiptId` is NOT NULL and RESTRICTed to an existing
+ * [ReceiptEntity] row (schema v2, ADR-0003): every expense originates from a receipt in MVP.
+ * `lineItemId` is nullable and un-FK'd — no `LineItemEntity` table exists yet.
  */
 @Entity(
     tableName = "expenses",
@@ -22,8 +22,15 @@ import androidx.room3.PrimaryKey
             onDelete = ForeignKey.RESTRICT,
             onUpdate = ForeignKey.RESTRICT,
         ),
+        ForeignKey(
+            entity = ReceiptEntity::class,
+            parentColumns = ["id"],
+            childColumns = ["receiptId"],
+            onDelete = ForeignKey.RESTRICT,
+            onUpdate = ForeignKey.RESTRICT,
+        ),
     ],
-    indices = [Index("categoryId")],
+    indices = [Index("categoryId"), Index("receiptId")],
 )
 data class ExpenseEntity(
     @PrimaryKey val id: String,

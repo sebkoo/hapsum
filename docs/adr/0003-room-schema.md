@@ -84,3 +84,30 @@ at the first schema, versus retrofitting it once a real migration is already ove
   code path ever sets is a weakened invariant, not a feature. Every reader downstream would need
   to consider a case that cannot occur, for a capability that isn't built. Adding it when manual
   entry is real work means a migration and an ADR at that point, not now.
+
+## Amendment (2026-07-28): schema v2 — receipts table + FK
+
+Row 14 fills the gap this ADR flagged above: `ReceiptEntity` (`id`, `imageRef`, `ocrText`,
+`parseConfidence` — the domain `Receipt`'s scalar fields; `lineItems` stays unpersisted until a
+`LineItemEntity` table exists, expected at the OCR parser row 16) and a `receipts` table, with
+`expenses.receiptId` RESTRICTed to it. SQLite has no `ALTER TABLE ADD FOREIGN KEY`, so `expenses`
+is recreated wholesale — Room's standard table-recreate migration — and `MIGRATION_1_2`'s SQL is
+copied verbatim from the generated `schemas/.../2.json`, which is the entire reason exporting
+schema v1 was worth doing from day one: `MigrationTestHelperTest` validates the migrated schema
+against that JSON, not against hand-written SQL that could quietly drift from what Room actually
+generates.
+
+**The migration backfills one placeholder receipt per distinct pre-existing `receiptId`.** Every
+v1 `expenses.receiptId` was a free-floating string with no backing row — the FK didn't exist yet.
+Adding it without a backfill would make any v1 database with expense data unmigratable (the FK
+would reject the copy-into-`expenses_new` step for every row whose `receiptId` isn't already in
+`receipts`). The migration runs `INSERT INTO receipts SELECT DISTINCT receiptId, '', '', 0.0 FROM
+expenses` before recreating `expenses`, so no pre-existing expense is dropped or orphaned. This
+app has no shipped users yet, so this path is exercised by tests, not real devices — but the
+migration is written as if it mattered, because eventually it will.
+
+**`ReceiptDao` ships insert-only.** `ReceiptEntity` needs *some* Kotlin-level write path to be
+reachable at all — without one, every FK-dependent test would drop to raw SQL instead of the
+DAO, which is worse. A full read surface and a `ReceiptRepository` belong to capture (row 15),
+which is what actually needs to query receipts; adding either now would be exactly the
+speculative surface CLAUDE.md's conventions warn against.

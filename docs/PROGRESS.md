@@ -30,7 +30,7 @@ product scope · the next stretch of the ladder.
   locally and stops; a human review + push is the per-commit approval
 - [x] 12. MVI runtime (`MviViewModel` base, reducer test harness) — ADR-0004 MVI×MVVM
 - [x] 13. `:feature:ledger` list screen + ViewModel tests (Turbine) + first Compose UI test
-- [ ] 14. `feat(core-data): receipt persistence + schema v2` — `ReceiptEntity` mirroring the
+- [x] 14. `feat(core-data): receipt persistence + schema v2` — `ReceiptEntity` mirroring the
   domain `Receipt`, receipts table, FK RESTRICT from `expenses.receiptId` to `receipts.id`
   (SQLite table-recreate migration), exportSchema v2 JSON, MigrationTestHelper test proving
   v1→v2 — the ADR-0003 migration discipline's first exercise

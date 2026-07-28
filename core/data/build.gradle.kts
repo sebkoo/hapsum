@@ -22,6 +22,13 @@ android {
             isIncludeAndroidResources = true
         }
     }
+
+    sourceSets {
+        // MigrationTestHelper reads exported schema JSON from test assets at runtime.
+        getByName("test") {
+            assets.srcDirs("$projectDir/schemas")
+        }
+    }
 }
 
 room3 {
@@ -43,4 +50,5 @@ dependencies {
     testImplementation(libs.coroutines.test)
     testImplementation(libs.robolectric)
     testImplementation(libs.androidx.test.ext.junit)
+    testImplementation(libs.room3.testing)
 }
