@@ -45,6 +45,7 @@ dependencies {
     implementation(project(":feature:ledger"))
     implementation(project(":feature:capture"))
     implementation(project(":feature:confirm"))
+    implementation(project(":feature:insights"))
 
     implementation(platform(libs.compose.bom))
     implementation(libs.androidx.core.ktx)

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="insights_empty">No spending to summarize yet</string>
+    <string name="insights_load_failed">Couldn\'t load your insights</string>
+    <string name="insights_loading">Loading your insights</string>
+</resources>

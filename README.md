@@ -84,7 +84,9 @@ One atomic commit per step — watch the history, that's the product.
 - ✅ 21. Shared locale-aware money display formatting (12,000 KRW, never 120.00)
 - ✅ 22. `GeminiNanoEngine` behind the `AiEngine` seam — Nano-first, `RuleBasedEngine`-floor
   fallback chain, confirm's two-phase suggestion, ADR-0006 accepted
-- 🔜 23–27. Insights → entitlements seam → coverage gate → `v0.1.0` (full ladder in
+- ✅ 23. `:feature:insights` — monthly summary screen, timezone-free/currency-partitioned
+  aggregation use case, Robolectric Compose-UI test
+- 🔜 24–27. Entitlements seam → coverage gate → `v0.1.0` (full ladder in
   [docs/PROGRESS.md](docs/PROGRESS.md))
 
 ## Tech stack and how it's tested

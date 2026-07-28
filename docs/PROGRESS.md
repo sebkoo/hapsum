@@ -100,7 +100,17 @@ product scope · the next stretch of the ladder.
   is already drawn). Closes a known-wrong display path (triage law) before a third consumer
   (insights, row 23) arrives
 - [x] 22. `GeminiNanoEngine` behind capability check — ADR-0006 on-device-first AI
-- [ ] 23. `:feature:insights` monthly summary + Espresso interop test
+- [x] 23. `:feature:insights` monthly summary + Espresso interop test —
+  `AggregateMonthlySummariesUseCase`, the first feature-local use case per ADR-0004's named
+  candidate: buckets by `YearMonth.from(expense.date)` (timezone-free by construction, no
+  `Clock`/`Instant`), partitions by `CurrencyCode` before any `Money.plus` fold so a
+  mixed-currency month yields one summary per currency instead of throwing (triage law), and
+  groups by the joined `Category` so archived categories still appear under their resolved name
+  (ADR-0003). `InsightsContentTest` (Robolectric, `createComposeRule`) is row 23's UI test,
+  running under verify.sh/CI with no emulator — the ladder's Espresso-interop wording resolves
+  to a Robolectric Compose-UI test because Hapsum has no View/Compose hybrid boundary to justify
+  a device-only androidTest. Rides along: `MoneyFormatterTest` negative-amount and cross-locale
+  cases, plus its three comma-vs-period test-name typo fixes.
 - [ ] 24. `Entitlements` seam — ADR-0007 monetization without lock-in
 - [ ] 25. Kover gate ≥80% on ViewModels/domain + coverage badge
 - [ ] 26. Screenshots/GIF + README refresh

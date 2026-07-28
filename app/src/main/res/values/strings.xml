@@ -2,4 +2,5 @@
 <resources>
     <string name="app_name">Hapsum</string>
     <string name="add_receipt">Add receipt</string>
+    <string name="insights_action">Insights</string>
 </resources>
