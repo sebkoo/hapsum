@@ -62,8 +62,10 @@ read.
 
 plan → failing test → make it pass → refactor → ADR if the decision is hard to reverse →
 self-review the diff → one atomic commit → tick `docs/PROGRESS.md` → stop. One commit per
-`/next-commit` invocation. `docs/PROGRESS.md` is the single authority on the plan: the loop may
-tick checkboxes and fix typos there, but semantic ladder changes are a human act at a phase gate.
+`/next-commit` invocation. The loop never pushes: commits stay local until the human reviews the
+diff and pushes — a push is the per-commit approval, and gives every commit its own CI verdict.
+`docs/PROGRESS.md` is the single authority on the plan: the loop may tick checkboxes and fix
+typos there, but semantic ladder changes are a human act at a phase gate.
 
 Philosophy: git history is the architectural narrative — a reviewer should be able to
 reconstruct every major decision from commit subjects and bodies alone.

@@ -26,21 +26,23 @@ product scope · the next stretch of the ladder.
   nonexistent category throws (FK RESTRICT enforced); `observeExpensesWithCategory()` returns the
   correctly mapped projection
 - [x] 10. `:core:designsystem` tokens/theme
-- [ ] 11. MVI runtime (`MviViewModel` base, reducer test harness) — ADR-0004 MVI×MVVM
-- [ ] 12. `:feature:ledger` list screen + ViewModel tests (Turbine) + first Compose UI test
-- [ ] 13. CameraX capture screen
-- [ ] 14. ML Kit OCR + deterministic receipt parser (synthetic fixtures, golden tests)
-- [ ] 15. `RuleBasedEngine` categorizer + tests
-- [ ] 16. `GeminiNanoEngine` behind capability check — ADR-0005 on-device-first AI
-- [ ] 17. `:feature:insights` monthly summary + Espresso interop test
-- [ ] 18. `Entitlements` seam — ADR-0006 monetization without lock-in
-- [ ] 19. Kover gate ≥80% on ViewModels/domain + coverage badge
-- [ ] 20. Screenshots/GIF + README refresh
-- [ ] 21. `v0.1.0` tagged release with changelog
+- [x] 11. `docs(harness): record the push-as-approval cadence in CLAUDE.md` — the loop commits
+  locally and stops; a human review + push is the per-commit approval
+- [ ] 12. MVI runtime (`MviViewModel` base, reducer test harness) — ADR-0004 MVI×MVVM
+- [ ] 13. `:feature:ledger` list screen + ViewModel tests (Turbine) + first Compose UI test
+- [ ] 14. CameraX capture screen
+- [ ] 15. ML Kit OCR + deterministic receipt parser (synthetic fixtures, golden tests)
+- [ ] 16. `RuleBasedEngine` categorizer + tests
+- [ ] 17. `GeminiNanoEngine` behind capability check — ADR-0005 on-device-first AI
+- [ ] 18. `:feature:insights` monthly summary + Espresso interop test
+- [ ] 19. `Entitlements` seam — ADR-0006 monetization without lock-in
+- [ ] 20. Kover gate ≥80% on ViewModels/domain + coverage badge
+- [ ] 21. Screenshots/GIF + README refresh
+- [ ] 22. `v0.1.0` tagged release with changelog
 
 ## Queued badges (added only when truthful)
 
-- Kover coverage badge (shields endpoint from a gist, no external service) — commit 19
+- Kover coverage badge (shields endpoint from a gist, no external service) — commit 20
 - `github/v/release` + downloads badges + official Google Play badge — v0.1.0
 - Star-history widget + Releases APK download section — once v0.1.0 exists
 
