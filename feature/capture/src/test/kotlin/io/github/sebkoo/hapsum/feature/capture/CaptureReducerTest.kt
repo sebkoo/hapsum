@@ -72,4 +72,33 @@ class CaptureReducerTest {
 
         assertEquals(CaptureUiState(isSaving = false, error = CaptureError.SaveFailed), state)
     }
+
+    @Test
+    fun `reduce — bind failed — sealed bind-failed error`() {
+        val state = harness.after(CaptureUiIntent.Internal.BindFailed)
+
+        assertEquals(CaptureUiState(error = CaptureError.BindFailed), state)
+    }
+
+    @Test
+    fun `reduce — retry bind clicked — clears the bind error and bumps bind attempt`() {
+        val failed = harness.after(CaptureUiIntent.Internal.BindFailed)
+
+        val state = harness.after(failed, CaptureUiIntent.RetryBindClicked)
+
+        assertEquals(CaptureUiState(error = null, bindAttempt = 1), state)
+    }
+
+    @Test
+    fun `reduce — retry bind clicked twice — bind attempt increments each time`() {
+        val state =
+            harness.after(
+                CaptureUiIntent.Internal.BindFailed,
+                CaptureUiIntent.RetryBindClicked,
+                CaptureUiIntent.Internal.BindFailed,
+                CaptureUiIntent.RetryBindClicked,
+            )
+
+        assertEquals(CaptureUiState(error = null, bindAttempt = 2), state)
+    }
 }

@@ -7,6 +7,7 @@ import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import io.github.sebkoo.hapsum.core.designsystem.HapsumTheme
+import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -65,5 +66,37 @@ class CaptureContentTest {
         compose
             .onAllNodesWithText("Camera access is needed to photograph receipts")
             .assertCountEquals(0)
+    }
+
+    @Test
+    fun `capture content — bind failed — renders the retry rationale, not the loading spinner`() {
+        compose.setContent {
+            HapsumTheme {
+                CaptureContent(
+                    state = CaptureUiState(hasCameraPermission = true, error = CaptureError.BindFailed),
+                    onIntent = {},
+                )
+            }
+        }
+
+        compose.onNodeWithText("Couldn't start the camera").assertIsDisplayed()
+    }
+
+    @Test
+    fun `capture content — bind failed — retry button sends RetryBindClicked`() {
+        var lastIntent: CaptureUiIntent? = null
+
+        compose.setContent {
+            HapsumTheme {
+                CaptureContent(
+                    state = CaptureUiState(hasCameraPermission = true, error = CaptureError.BindFailed),
+                    onIntent = { intent -> lastIntent = intent },
+                )
+            }
+        }
+
+        compose.onNodeWithText("Try again").performClick()
+
+        assertEquals(CaptureUiIntent.RetryBindClicked, lastIntent)
     }
 }

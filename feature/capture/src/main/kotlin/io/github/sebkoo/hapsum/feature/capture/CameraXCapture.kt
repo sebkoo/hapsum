@@ -54,6 +54,10 @@ class CameraXCapture
         private suspend fun awaitCameraProvider(): ProcessCameraProvider =
             suspendCancellableCoroutine { continuation ->
                 val future = ProcessCameraProvider.getInstance(context)
+                // Harmless for this specific singleton future (there is nothing to actually
+                // interrupt), but the wrapper is a pattern future ListenableFuture call sites
+                // will copy, so it models the correct shape: cancellation propagates outward.
+                continuation.invokeOnCancellation { future.cancel(false) }
                 future.addListener(
                     { continuation.resume(future.get()) },
                     ContextCompat.getMainExecutor(context),

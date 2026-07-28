@@ -12,6 +12,8 @@ data class CaptureUiState(
     val surfaceRequest: SurfaceRequest? = null,
     val isSaving: Boolean = false,
     val error: CaptureError? = null,
+    /** Bumped by [CaptureUiIntent.RetryBindClicked] — the key that re-triggers `bindCamera`. */
+    val bindAttempt: Int = 0,
 ) : UiState
 
 /** Sealed, never a raw String (ADR-0004); grows variants as failure modes become real. */
@@ -19,6 +21,9 @@ sealed interface CaptureError {
     data object CaptureFailed : CaptureError
 
     data object SaveFailed : CaptureError
+
+    /** Binding the camera session itself failed — no camera available, or one already in use. */
+    data object BindFailed : CaptureError
 }
 
 sealed interface CaptureUiIntent : UiIntent {
@@ -27,6 +32,9 @@ sealed interface CaptureUiIntent : UiIntent {
     ) : CaptureUiIntent
 
     data object CapturePhotoClicked : CaptureUiIntent
+
+    /** User-triggered retry after [CaptureError.BindFailed] — bumps `bindAttempt` to rebind. */
+    data object RetryBindClicked : CaptureUiIntent
 
     /** Async results re-entering the reducer — unforgeable from the UI (ADR-0004). */
     sealed interface Internal :
@@ -48,6 +56,8 @@ sealed interface CaptureUiIntent : UiIntent {
         ) : Internal
 
         data object ReceiptSaveFailed : Internal
+
+        data object BindFailed : Internal
     }
 }
 

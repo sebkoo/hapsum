@@ -3,5 +3,8 @@
     <string name="capture_permission_rationale">Camera access is needed to photograph receipts</string>
     <string name="capture_permission_request">Grant camera access</string>
     <string name="capture_button">Capture receipt</string>
+    <string name="capture_capture_failed">Couldn\'t take the photo</string>
     <string name="capture_save_failed">Couldn\'t save the receipt</string>
+    <string name="capture_bind_failed">Couldn\'t start the camera</string>
+    <string name="capture_bind_retry">Try again</string>
 </resources>

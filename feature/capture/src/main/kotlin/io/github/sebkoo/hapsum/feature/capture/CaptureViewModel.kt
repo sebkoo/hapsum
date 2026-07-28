@@ -41,9 +41,21 @@ class CaptureViewModel
             }
         }
 
-        /** Called from a `LaunchedEffect` tied to the screen's own lifecycle — never from [react]. */
+        /**
+         * Called from a `LaunchedEffect` tied to the screen's own lifecycle — never from [react].
+         * No camera available, or one already in use, throws out of `bind()` before it ever
+         * reaches its own internal suspend-until-cancelled loop; contained here into
+         * [CaptureError.BindFailed] instead of crashing the `LaunchedEffect` — the same posture
+         * as [recognizeOrEmpty].
+         */
         suspend fun bindCamera(lifecycleOwner: LifecycleOwner) {
-            cameraCapture.bind(lifecycleOwner)
+            try {
+                cameraCapture.bind(lifecycleOwner)
+            } catch (cancellation: CancellationException) {
+                throw cancellation
+            } catch (_: Exception) {
+                dispatch(CaptureUiIntent.Internal.BindFailed)
+            }
         }
 
         override fun react(
@@ -110,7 +122,12 @@ class CaptureViewModel
                 try {
                     receiptRepository.save(receipt)
                     dispatch(CaptureUiIntent.Internal.ReceiptSaved(receiptId))
-                } catch (_: IOException) {
+                } catch (cancellation: CancellationException) {
+                    throw cancellation
+                } catch (_: Exception) {
+                    // Disk-full, an FK/constraint violation, or any other Room/SQLite runtime
+                    // exception must land as state, not crash viewModelScope — the same
+                    // containment recognizeOrEmpty gives an OCR failure.
                     dispatch(CaptureUiIntent.Internal.ReceiptSaveFailed)
                 }
             }
@@ -165,6 +182,14 @@ class CaptureViewModel
 
                     CaptureUiIntent.Internal.ReceiptSaveFailed -> {
                         state.copy(isSaving = false, error = CaptureError.SaveFailed)
+                    }
+
+                    CaptureUiIntent.Internal.BindFailed -> {
+                        state.copy(error = CaptureError.BindFailed)
+                    }
+
+                    CaptureUiIntent.RetryBindClicked -> {
+                        state.copy(error = null, bindAttempt = state.bindAttempt + 1)
                     }
                 }
         }

@@ -47,7 +47,7 @@ fun CaptureScreen(
         viewModel.onIntent(CaptureUiIntent.PermissionResult(granted))
     }
 
-    LaunchedEffect(state.hasCameraPermission, lifecycleOwner) {
+    LaunchedEffect(state.hasCameraPermission, state.bindAttempt, lifecycleOwner) {
         if (state.hasCameraPermission) {
             viewModel.bindCamera(lifecycleOwner)
         }
@@ -72,6 +72,10 @@ internal fun CaptureContent(
         when {
             !state.hasCameraPermission -> {
                 PermissionRationale(onRequestPermission = onRequestPermission)
+            }
+
+            state.error == CaptureError.BindFailed -> {
+                BindFailureContent(onRetry = { onIntent(CaptureUiIntent.RetryBindClicked) })
             }
 
             state.surfaceRequest == null -> {
@@ -105,6 +109,25 @@ private fun PermissionRationale(
 }
 
 @Composable
+private fun BindFailureContent(
+    onRetry: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Column(
+        modifier = modifier.padding(24.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        Text(
+            text = stringResource(R.string.capture_bind_failed),
+            style = MaterialTheme.typography.bodyLarge,
+        )
+        Button(onClick = onRetry) {
+            Text(text = stringResource(R.string.capture_bind_retry))
+        }
+    }
+}
+
+@Composable
 private fun CameraPreview(
     state: CaptureUiState,
     onIntent: (CaptureUiIntent) -> Unit,
@@ -121,9 +144,16 @@ private fun CameraPreview(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            if (state.error != null) {
+            state.error?.let { error ->
                 Text(
-                    text = stringResource(R.string.capture_save_failed),
+                    text =
+                        stringResource(
+                            when (error) {
+                                CaptureError.CaptureFailed -> R.string.capture_capture_failed
+                                CaptureError.SaveFailed -> R.string.capture_save_failed
+                                CaptureError.BindFailed -> R.string.capture_bind_failed
+                            },
+                        ),
                     style = MaterialTheme.typography.bodyMedium,
                 )
             }

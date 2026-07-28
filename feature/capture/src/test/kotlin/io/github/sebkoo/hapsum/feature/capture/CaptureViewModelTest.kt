@@ -43,12 +43,15 @@ private class TestDispatcherProvider(
 /** Never exercises real camera hardware — [CameraXCapture] is the only untested piece (ADR). */
 private class FakeCameraCapture(
     private val captureError: IOException? = null,
+    private val bindError: Exception? = null,
 ) : CameraCapture {
     override val surfaceRequests: Flow<SurfaceRequest> = emptyFlow()
     var capturedFile: File? = null
         private set
 
-    override suspend fun bind(lifecycleOwner: LifecycleOwner) {}
+    override suspend fun bind(lifecycleOwner: LifecycleOwner) {
+        bindError?.let { throw it }
+    }
 
     override suspend fun capturePhoto(outputFile: File) {
         capturedFile = outputFile
@@ -193,6 +196,50 @@ class CaptureViewModelTest {
                 CaptureUiState(isSaving = false, error = CaptureError.SaveFailed),
                 vm.state.value,
             )
+        }
+
+    @Test
+    fun `capture photo clicked — repository save throws a non-IOException — still sealed save-failed, no crash`() =
+        runTest {
+            val repository =
+                mockk<ReceiptRepository> {
+                    coEvery { save(any()) } throws IllegalStateException("disk full")
+                }
+            val vm = viewModel(FakeCameraCapture(), repository)
+
+            vm.onIntent(CaptureUiIntent.CapturePhotoClicked)
+            advanceUntilIdle()
+
+            assertEquals(
+                CaptureUiState(isSaving = false, error = CaptureError.SaveFailed),
+                vm.state.value,
+            )
+        }
+
+    @Test
+    fun `bindCamera — no camera available — sealed bind-failed error, exception does not escape`() =
+        runTest {
+            val vm = viewModel(FakeCameraCapture(bindError = IllegalStateException("no camera")), mockk())
+
+            vm.bindCamera(mockk<LifecycleOwner>(relaxed = true))
+            advanceUntilIdle()
+
+            assertEquals(CaptureUiState(error = CaptureError.BindFailed), vm.state.value)
+        }
+
+    @Test
+    fun `retry bind clicked — clears the bind error, bindCamera called again succeeds`() =
+        runTest {
+            val vm = viewModel(FakeCameraCapture(bindError = IllegalStateException("no camera")), mockk())
+            vm.bindCamera(mockk<LifecycleOwner>(relaxed = true))
+            advanceUntilIdle()
+            assertEquals(CaptureError.BindFailed, vm.state.value.error)
+
+            vm.onIntent(CaptureUiIntent.RetryBindClicked)
+            advanceUntilIdle()
+
+            assertEquals(null, vm.state.value.error)
+            assertEquals(1, vm.state.value.bindAttempt)
         }
 
     @Test
