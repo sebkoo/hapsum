@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="ledger_empty">No expenses yet</string>
+    <string name="ledger_load_failed">Couldn\'t load your expenses</string>
+    <string name="ledger_loading">Loading your expenses</string>
+</resources>

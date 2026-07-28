@@ -6,8 +6,8 @@ on-device. Android app: Kotlin, Jetpack Compose, MVI on MVVM, offline-first, on-
 ## Module map
 
 Current: `:app` · `:core:model` · `:core:testing` · `:core:data` · `:core:designsystem` ·
-`:core:mvi`.
-End state: adds `:core:ai` · `:feature:capture` · `:feature:ledger` · `:feature:insights`.
+`:core:mvi` · `:feature:ledger`.
+End state: adds `:core:ai` · `:feature:capture` · `:feature:insights`.
 Modules are carved out when their code arrives, never as empty shells. `:core:mvi` is generic
 infrastructure — lifecycle + coroutines only, never a domain type (ADR-0004).
 

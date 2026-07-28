@@ -29,7 +29,7 @@ product scope · the next stretch of the ladder.
 - [x] 11. `docs(harness): record the push-as-approval cadence in CLAUDE.md` — the loop commits
   locally and stops; a human review + push is the per-commit approval
 - [x] 12. MVI runtime (`MviViewModel` base, reducer test harness) — ADR-0004 MVI×MVVM
-- [ ] 13. `:feature:ledger` list screen + ViewModel tests (Turbine) + first Compose UI test
+- [x] 13. `:feature:ledger` list screen + ViewModel tests (Turbine) + first Compose UI test
 - [ ] 14. `feat(core-data): receipt persistence + schema v2` — `ReceiptEntity` mirroring the
   domain `Receipt`, receipts table, FK RESTRICT from `expenses.receiptId` to `receipts.id`
   (SQLite table-recreate migration), exportSchema v2 JSON, MigrationTestHelper test proving

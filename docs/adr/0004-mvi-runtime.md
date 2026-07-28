@@ -42,7 +42,8 @@ Three hardenings, each closing a reviewed failure mode:
   delivery nondeterministically between collectors; the guard turns "navigation sometimes
   silently does nothing" into an immediate `IllegalStateException`. The sanctioned collection
   idiom is one collector under `repeatOnLifecycle(STARTED)`; a Compose helper lands with the
-  first screen (row 13), not here.
+  first effect-emitting screen — the ledger (row 13) turned out to emit none, so capture
+  (row 15) is the expected first.
 
 **Intents run through a drain loop, and async results re-enter as `InternalUiIntent`s.**
 `onIntent` is the single public entry; it rejects `InternalUiIntent` variants, which only the
@@ -92,9 +93,13 @@ gains `:core:mvi` (approved at this row's gate). `ReducerTestHarness` stays in t
 - Row-13 pattern, fixed now: repository observation starts in `init`/`viewModelScope`, results
   come back as nested `Internal` intent variants via `dispatch`, loading→content→error is a
   pure reduction. Feature tests drive internal intents through their real sources (a MockK'd
-  repository flow), never by calling them directly. A shared `MainDispatcherRule` lands in
-  `:core:testing` with its first user (row 13); `DispatcherProvider` lands with the first
-  CPU/IO-shifting feature (expected rows 16–17).
+  repository flow), never by calling them directly. `DispatcherProvider` (in `:core:mvi` — a
+  pure-coroutines abstraction, inside this module's dependency rule) landed at row 13 by
+  decision, injected into the ledger ViewModel; its test double stays feature-local until a
+  second feature needs it, because pure-JVM `:core:testing` cannot depend on this Android
+  library — sharing it is the trigger to revisit that boundary. A shared `MainDispatcherRule`
+  waits for the first test that actually dispatches to Main: neither row 12's (trySend-first
+  effects) nor row 13's (dispatcher-injected collection) ever touch it.
 - Effects are UI-lifetime-scoped, fire-and-forget: anything that must survive the screen
   belongs in the data layer or in state, never in an effect.
 - Process death is out of MVP scope: ledger state is re-derivable from Room; `initialState`
