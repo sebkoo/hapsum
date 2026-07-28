@@ -138,17 +138,30 @@ product scope · the next stretch of the ladder.
   Coverage badge wired this row: gist `ac07feacc241fbdc26a0ea54b7138498` created,
   `KOVER_BADGE_GIST_TOKEN` fine-grained PAT set by the human, `scripts/publish-coverage-badge.sh`
   + a continue-on-error main-push CI step publish it — badge now live next to CI in the README
-- [ ] 27. `v0.1.0` tagged release with changelog
+- [x] 27. `v0.1.0` tagged release with changelog — `assembleRelease` measured green first-try
+  (unsigned, unminified, 55 MB) ahead of this row, human-approved as the closing gate context.
+  Debug-signed sideload decision: `signingConfig = signingConfigs.getByName("debug")` on the
+  release build type is the sideload path for this release, with a comment marking it as
+  evaluation-only until a human-held release keystore replaces it before any Play submission.
+  No ADR — the signing choice and versionName bump are reversible conventions, not hard-to-reverse
+  architecture. `versionCode` stays 1: nothing was ever released under it, so there is no prior
+  release to increment past. `CHANGELOG.md` added (Keep a Changelog form, distilled by
+  capability). Queued badges split this row: `github/v/release` + downloads badges go live now;
+  the official Google Play badge stays queued since the app isn't on Play.
 
 ## Queued badges (added only when truthful)
 
 - ~~Kover coverage badge (shields endpoint from a gist, no external service) — commit 25~~ live
   as of commit 26
-- `github/v/release` + downloads badges + official Google Play badge — v0.1.0
-- Star-history widget + Releases APK download section — once v0.1.0 exists
+- ~~`github/v/release` + downloads badges — v0.1.0~~ live as of commit 27
+- ~~Star-history widget + Releases APK download section — v0.1.0~~ live as of commit 27
+- Official Google Play badge — queued until the app is actually on Play
 
 ## Operational backlog (friction to revisit, not commits)
 
+- R8/resource shrinking — v0.1.0's `assembleRelease` measured 55 MB unminified; shrink before
+  the next release
+- Real release keystore before any Play submission — v0.1.0 ships debug-signed, sideload only
 - Generalize the README lint into a docs lint
 - Add `/review` and `/release` commands when their work exists
 - Split verify.sh into `verify-*.sh` stages at ~50 lines

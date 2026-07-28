@@ -6,6 +6,8 @@ on-device. An AI receipt scanner and expense tracker in Kotlin, Jetpack Compose 
 [![CI](https://github.com/sebkoo/hapsum/actions/workflows/ci.yml/badge.svg)](https://github.com/sebkoo/hapsum/actions/workflows/ci.yml)
 [![Coverage](https://img.shields.io/endpoint?url=https%3A%2F%2Fgist.githubusercontent.com%2Fsebkoo%2Fac07feacc241fbdc26a0ea54b7138498%2Fraw%2Fhapsum-coverage.json)](docs/PROGRESS.md#L118)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
+[![Release](https://img.shields.io/github/v/release/sebkoo/hapsum)](https://github.com/sebkoo/hapsum/releases/latest)
+[![Downloads](https://img.shields.io/github/downloads/sebkoo/hapsum/total)](https://github.com/sebkoo/hapsum/releases)
 
 [![Kotlin](https://img.shields.io/badge/Kotlin-2.3.21-7F52FF.svg?logo=kotlin&logoColor=white)](https://kotlinlang.org)
 [![Compose](https://img.shields.io/badge/Jetpack%20Compose-BOM_2026.06.01-4285F4.svg?logo=jetpackcompose&logoColor=white)](https://developer.android.com/jetpack/compose)
@@ -36,6 +38,14 @@ no real receipt or physical device involved. The category suggestion shown is th
 chain's deterministic floor (`RuleBasedEngine`); Gemini Nano refinement is gated to
 Pixel-9/10-class hardware (ADR-0006), so its on-device demo lands once supported hardware is
 available (backlog).
+
+## Install
+
+Grab the APK from [the latest release](https://github.com/sebkoo/hapsum/releases/latest) and
+sideload it — Settings → allow installs from your file manager or browser, since this build
+isn't on Google Play. The APK is **debug-signed — evaluation only**: it is unminified and
+signed with the debug keystore, not a release identity. A real keystore and Play submission are
+backlog.
 
 ## Why I'm building this
 
@@ -112,7 +122,7 @@ One atomic commit per step — watch the history, that's the product.
 - ✅ 25. Kover ≥80% line coverage gate on ViewModels/domain, riding inside `scripts/verify.sh`
 - ✅ 26. Screenshots/GIF + README refresh — captured on-device via the emulator's virtual-scene
   camera, coverage badge live above
-- 🔜 27. `v0.1.0` tagged release with changelog (full ladder in
+- ✅ 27. `v0.1.0` tagged release with changelog (full ladder in
   [docs/PROGRESS.md](docs/PROGRESS.md))
 
 ## Tech stack and how it's tested
@@ -176,12 +186,15 @@ receipt ever enters this repository.
 
 ## Roadmap and sustainability
 
-Phase 1 builds the ledger on Room; then CameraX capture, the OCR-to-parser pipeline against
-synthetic fixtures, the AI engine ladder, monthly insights, and a `v0.1.0` release with
+Phase 1 built the ledger on Room; then CameraX capture, the OCR-to-parser pipeline against
+synthetic fixtures, the AI engine ladder, monthly insights, and the `v0.1.0` release with
 screenshots and an installable APK. The core app stays open source; a paid Pro build may later
 add conveniences (unlimited scans, CSV/PDF export, deeper insights) through the `Entitlements`
-boundary drawn dashed above. Designed diagrams and real screenshots replace the Mermaid sketch
-when there is something real to photograph.
+boundary drawn dashed above. R8/resource shrinking and a real release keystore are next.
+
+## Star history
+
+[![Star History Chart](https://api.star-history.com/svg?repos=sebkoo/hapsum&type=Date)](https://star-history.com/#sebkoo/hapsum&Date)
 
 ---
 
