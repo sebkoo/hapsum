@@ -16,7 +16,7 @@ The README progress board mirrors this file manually, in the same commit as each
 **Phase gate — human review before Phase 1:** architecture docs and ADR-0001 · dependency pins ·
 product scope · the next stretch of the ladder.
 
-## Phase 1+ — planned, not started
+## Phase 1 — infrastructure and the first screen
 
 - [x] 7. `:core:model` + `:core:testing` carve-out
 - [x] 8. Room schema + repository (offline-first), MockK'd DAO tests — ADR-0003 Room schema
@@ -34,19 +34,44 @@ product scope · the next stretch of the ladder.
   domain `Receipt`, receipts table, FK RESTRICT from `expenses.receiptId` to `receipts.id`
   (SQLite table-recreate migration), exportSchema v2 JSON, MigrationTestHelper test proving
   v1→v2 — the ADR-0003 migration discipline's first exercise
-- [ ] 15. CameraX capture screen
-- [ ] 16. ML Kit OCR + deterministic receipt parser (synthetic fixtures, golden tests)
-- [ ] 17. `RuleBasedEngine` categorizer + tests
-- [ ] 18. `GeminiNanoEngine` behind capability check — ADR-0005 on-device-first AI
-- [ ] 19. `:feature:insights` monthly summary + Espresso interop test
-- [ ] 20. `Entitlements` seam — ADR-0006 monetization without lock-in
-- [ ] 21. Kover gate ≥80% on ViewModels/domain + coverage badge
-- [ ] 22. Screenshots/GIF + README refresh
-- [ ] 23. `v0.1.0` tagged release with changelog
+
+**Phase gate — human review before Phase 2:** rows 13–14 reviewed, pushed, CI green.
+
+## Phase 2 — capture and on-device categorization
+
+- [ ] 15. `feat(di): adopt Hilt, retire AppContainer` — ADR-0005 Hilt over Koin/manual, including
+  the honest origin story (manual container to keep the graph visible, Hilt once the second
+  ViewModel approached); migrates every current injection site (database, repositories,
+  dispatchers, `LedgerViewModel` → `@HiltViewModel`); no Hilt test infrastructure until a test
+  needs it
+- [ ] 16. `feat(capture): CameraX capture screen` — copies the ledger MVI template; permission
+  flow; `ReceiptRepository` + its read surface arrive here (their first user); the first
+  effect-emitting screen (the Compose effect-collection helper and possibly `MainDispatcherRule`
+  find their first real users); navigation effect carries the new receipt id. Capture writes the
+  JPEG to app-private storage (`filesDir/receipts/<receiptId>.jpg`) — `ReceiptEntity.imageRef` is
+  the app-managed relative path, never a transient camera `content://` Uri or MediaStore. A
+  Receipt without an Expense is a designed state (captured evidence awaiting confirm), not a
+  failure to prevent — no transaction wraps capture into an Expense; confirm's Expense +
+  line-item write is the `@Transaction`. Unconfirmed receipts stay invisible in MVP (roadmap
+  note below, not this row's scope)
+- [ ] 17. `feat(ocr): ML Kit OCR + deterministic receipt parser` — against synthetic golden
+  fixtures
+- [ ] 18. `feat(ai): RuleBasedEngine categorizer` + tests
+
+**Phase gate — human review before Phase 3.**
+
+## Phase 3 — on-device AI, insights, monetization
+
+- [ ] 19. `GeminiNanoEngine` behind capability check — ADR-0006 on-device-first AI
+- [ ] 20. `:feature:insights` monthly summary + Espresso interop test
+- [ ] 21. `Entitlements` seam — ADR-0007 monetization without lock-in
+- [ ] 22. Kover gate ≥80% on ViewModels/domain + coverage badge
+- [ ] 23. Screenshots/GIF + README refresh
+- [ ] 24. `v0.1.0` tagged release with changelog
 
 ## Queued badges (added only when truthful)
 
-- Kover coverage badge (shields endpoint from a gist, no external service) — commit 21
+- Kover coverage badge (shields endpoint from a gist, no external service) — commit 22
 - `github/v/release` + downloads badges + official Google Play badge — v0.1.0
 - Star-history widget + Releases APK download section — once v0.1.0 exists
 
@@ -60,3 +85,6 @@ product scope · the next stretch of the ladder.
   migration, and its own ADR (ADR-0003 deliberately keeps it `NOT NULL` for MVP)
 - Per-line-item categorization — today an `Expense` has one `CategoryId`; splitting a single
   receipt's line items across categories is deferred (ADR-0003)
+- Unconfirmed-receipts inbox and cleanup policy — capture (commit 16) can leave a `Receipt` with
+  no `Expense` (a designed state, not a bug); a UI to surface or a policy to expire these is
+  future scope, not commit 16's

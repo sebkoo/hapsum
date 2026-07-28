@@ -53,13 +53,13 @@ at the first schema, versus retrofitting it once a real migration is already ove
 
 - Every expense's category reference is always resolvable — no defensive null-handling for "the
   category this expense pointed at no longer exists" anywhere downstream, including the
-  insights aggregation (commit 19).
+  insights aggregation (commit 20).
 - Deleting a category is a two-step user action in spirit (archive now, nothing to reconcile
   later) rather than a destructive one; a future "manage categories" screen can safely offer
   "archive" without a confirmation dialog explaining data loss, because there isn't any.
 - `:feature:ledger` (commit 13) has its read query already shaped; it wires a `ViewModel` around
   `observeExpensesWithCategory()` rather than designing a join.
-- Capture (commit 15) and the OCR parser (commit 16) must always produce a `Receipt` before an
+- Capture (commit 16) and the OCR parser (commit 17) must always produce a `Receipt` before an
   `Expense` — there is no code path today that can construct an `Expense` without one.
 - Roadmap notes, explicitly out of scope here:
   - **Manual entry** (an `Expense` without a `Receipt`) needs a schema migration (`receiptId`
@@ -89,7 +89,7 @@ at the first schema, versus retrofitting it once a real migration is already ove
 
 Row 14 fills the gap this ADR flagged above: `ReceiptEntity` (`id`, `imageRef`, `ocrText`,
 `parseConfidence` — the domain `Receipt`'s scalar fields; `lineItems` stays unpersisted until a
-`LineItemEntity` table exists, expected at the OCR parser row 16) and a `receipts` table, with
+`LineItemEntity` table exists, expected at the OCR parser row 17) and a `receipts` table, with
 `expenses.receiptId` RESTRICTed to it. SQLite has no `ALTER TABLE ADD FOREIGN KEY`, so `expenses`
 is recreated wholesale — Room's standard table-recreate migration — and `MIGRATION_1_2`'s SQL is
 copied verbatim from the generated `schemas/.../2.json`, which is the entire reason exporting
@@ -108,6 +108,6 @@ migration is written as if it mattered, because eventually it will.
 
 **`ReceiptDao` ships insert-only.** `ReceiptEntity` needs *some* Kotlin-level write path to be
 reachable at all — without one, every FK-dependent test would drop to raw SQL instead of the
-DAO, which is worse. A full read surface and a `ReceiptRepository` belong to capture (row 15),
+DAO, which is worse. A full read surface and a `ReceiptRepository` belong to capture (row 16),
 which is what actually needs to query receipts; adding either now would be exactly the
 speculative surface CLAUDE.md's conventions warn against.

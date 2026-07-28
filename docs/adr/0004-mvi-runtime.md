@@ -43,7 +43,7 @@ Three hardenings, each closing a reviewed failure mode:
   silently does nothing" into an immediate `IllegalStateException`. The sanctioned collection
   idiom is one collector under `repeatOnLifecycle(STARTED)`; a Compose helper lands with the
   first effect-emitting screen — the ledger (row 13) turned out to emit none, so capture
-  (row 15) is the expected first.
+  (row 16) is the expected first.
 
 **Intents run through a drain loop, and async results re-enter as `InternalUiIntent`s.**
 `onIntent` is the single public entry; it rejects `InternalUiIntent` variants, which only the
@@ -64,7 +64,7 @@ load-bearing (the CAS loop may re-invoke the reducer on contention). `UiState`s 
 
 **No blanket UseCase layer.** ViewModels talk to repositories directly. A use case is
 introduced only where domain logic exists beyond pass-through; the first expected candidate is
-monthly insight aggregation (row 19). "Where are your use cases?" — here, when they earn their
+monthly insight aggregation (row 20). "Where are your use cases?" — here, when they earn their
 file.
 
 **Navigation is an Effect.** Screens emit navigation as one-shot effects; features export
@@ -109,7 +109,7 @@ gains `:core:mvi` (approved at this row's gate). `ReducerTestHarness` stays in t
 - The sequencing gap this ADR's review surfaced — capture's "navigation effect carrying the
   new receipt id" had no receipts table behind it — was approved at the row-12 gate as ladder
   row 14: `ReceiptEntity`, FK RESTRICT from `expenses.receiptId`, and the v1→v2 table-recreate
-  migration land there, before the capture screen (row 15).
+  migration land there, before the capture screen (row 16).
 
 ## Alternatives considered
 
@@ -129,5 +129,5 @@ gains `:core:mvi` (approved at this row's gate). `ReducerTestHarness` stays in t
 - **Abstract `reduce` method on the ViewModel** — puts the reducer where the harness cannot
   reach it without instantiating an Android class; breaks plain-JVM reducer testing.
 - **A blanket UseCase-per-interaction layer** — pass-through ceremony between ViewModel and
-  repository; rejected until real domain logic exists (row 19 aggregation is the first
+  repository; rejected until real domain logic exists (row 20 aggregation is the first
   candidate).
