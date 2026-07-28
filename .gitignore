@@ -1,0 +1,29 @@
+# Gradle
+.gradle/
+build/
+
+# Local configuration — machine-specific, never committed
+local.properties
+
+# IDE
+.idea/
+*.iml
+.DS_Store
+
+# Kotlin
+.kotlin/
+
+# Claude Code local overrides
+.claude/settings.local.json
+
+# Private working notes — never committed
+notes/
+
+# Android tooling output
+captures/
+.externalNativeBuild/
+.cxx/
+
+# Signing material — never committed
+*.keystore
+*.jks
