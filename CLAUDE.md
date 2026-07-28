@@ -44,6 +44,20 @@ Done is: `scripts/verify.sh` green AND the commit's checkbox ticked in `docs/PRO
 (mirrored in the README progress board, same commit). Judgment — including this assistant's own
 "looks done" — is never the criterion.
 
+## Triage law
+
+Honestly-unsupported input may ship: a receipt the parser genuinely cannot read (garbled OCR,
+an unsupported layout) may surface as `null`/low-confidence fields for the confirm screen to
+show empty or highlighted — that is truthful degradation, not a defect. Known-wrong output and
+crash paths may not ship: a field that parses to a value that is actually incorrect, or any path
+that throws instead of degrading, blocks the commit until fixed.
+
+## Reporting rule
+
+A transient failure that passes on retry (a flaky test, a one-off CI hiccup, a build that failed
+once and then succeeded unchanged) still gets one line in the completion report — silently
+retrying and reporting green hides signal a future flake investigation would need.
+
 ## Never do
 
 - No secrets, tokens, or real receipt images — fixtures are synthetic by construction.

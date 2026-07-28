@@ -29,7 +29,7 @@ also a silent human error, not a build failure, until something is threaded to t
 `HapsumApplication` becomes `@HiltAndroidApp`; `MainActivity` becomes `@AndroidEntryPoint`;
 `LedgerViewModel` becomes `@HiltViewModel` with an `@Inject` constructor; the Nav3 entry in
 `LedgerNavigation.kt` fetches it with `hiltViewModel()`
-(`androidx.hilt:hilt-navigation-compose:1.4.0`) instead of manually invoking
+(`androidx.hilt:hilt-navigation-compose:1.3.0`) instead of manually invoking
 `viewModel { LedgerViewModel(repository, dispatchers) }`.
 
 **`AppContainer.kt` and `HapsumDataContainer`/`DatabaseFactory.kt` are deleted outright** — no

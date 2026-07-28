@@ -64,7 +64,7 @@ load-bearing (the CAS loop may re-invoke the reducer on contention). `UiState`s 
 
 **No blanket UseCase layer.** ViewModels talk to repositories directly. A use case is
 introduced only where domain logic exists beyond pass-through; the first expected candidate is
-monthly insight aggregation (row 20). "Where are your use cases?" — here, when they earn their
+monthly insight aggregation (row 21). "Where are your use cases?" — here, when they earn their
 file.
 
 **Navigation is an Effect.** Screens emit navigation as one-shot effects; features export

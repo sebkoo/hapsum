@@ -67,10 +67,10 @@ product scope · the next stretch of the ladder.
   parse output on the `Receipt` — the confirm screen is a discovered missing ladder row, flagged
   below for the Phase 3 gate
 - [x] 18. `feat(ai): RuleBasedEngine categorizer` + tests — `:core:ai` carved out, pure JVM for
-  now (the android-library conversion belongs to row 19, when `GeminiNanoEngine` needs a
+  now (the android-library conversion belongs to row 20, when `GeminiNanoEngine` needs a
   `Context`). A pure keyword categorizer: whole-word case-insensitive matching, rule order as
   deterministic precedence for ambiguous words, `UNCATEGORIZED` floor. No `AiEngine` interface
-  yet — ADR-0001 fixed the boundary and explicitly deferred that design to ADR-0006 (row 19).
+  yet — ADR-0001 fixed the boundary and explicitly deferred that design to ADR-0006 (row 20).
   The engine's vocabulary and the startup seed share one source of truth (`DefaultCategories`
   in `:core:model`), so every id the engine can suggest exists in the database by construction
   — no FK ambush when confirm starts persisting suggestions
@@ -79,16 +79,18 @@ product scope · the next stretch of the ladder.
 
 ## Phase 3 — on-device AI, insights, monetization
 
-- [ ] 19. `GeminiNanoEngine` behind capability check — ADR-0006 on-device-first AI
-- [ ] 20. `:feature:insights` monthly summary + Espresso interop test
-- [ ] 21. `Entitlements` seam — ADR-0007 monetization without lock-in
-- [ ] 22. Kover gate ≥80% on ViewModels/domain + coverage badge
-- [ ] 23. Screenshots/GIF + README refresh
-- [ ] 24. `v0.1.0` tagged release with changelog
+- [ ] 19. Confirm screen — receipt confirm/edit UI writing the `Expense` + line-item join in one
+  `@Transaction`; the discovered missing ladder row flagged at commit 17
+- [ ] 20. `GeminiNanoEngine` behind capability check — ADR-0006 on-device-first AI
+- [ ] 21. `:feature:insights` monthly summary + Espresso interop test
+- [ ] 22. `Entitlements` seam — ADR-0007 monetization without lock-in
+- [ ] 23. Kover gate ≥80% on ViewModels/domain + coverage badge
+- [ ] 24. Screenshots/GIF + README refresh
+- [ ] 25. `v0.1.0` tagged release with changelog
 
 ## Queued badges (added only when truthful)
 
-- Kover coverage badge (shields endpoint from a gist, no external service) — commit 22
+- Kover coverage badge (shields endpoint from a gist, no external service) — commit 23
 - `github/v/release` + downloads badges + official Google Play badge — v0.1.0
 - Star-history widget + Releases APK download section — once v0.1.0 exists
 
@@ -105,12 +107,20 @@ product scope · the next stretch of the ladder.
 - Unconfirmed-receipts inbox and cleanup policy — capture (commit 16) can leave a `Receipt` with
   no `Expense` (a designed state, not a bug); a UI to surface or a policy to expire these is
   future scope, not commit 16's
-- **Confirm screen is a discovered missing ladder row (flagged at commit 17 for the Phase 3
-  gate):** capture now stores parsed fields with per-field confidence exactly so a confirm
-  screen can prefill/highlight them and write the `Expense` + line-item join in one
-  `@Transaction` — no ladder row builds that screen yet; adding one is a human act at the gate
 - Multi-currency detection — commit 17 parses every amount in the single app-default currency
   (device locale at receipt creation); reading the currency off the receipt text itself is
   future scope
 - OCR is Latin-script only (bundled ML Kit model) — other script packs (e.g. Korean) are a
   pinned-dependency decision for a later row
+- Noise-realistic synthetic OCR fixtures — today's golden fixtures are clean text; hand-model
+  fixtures on observed receipt structure (skew, dropout, misreads) to stress the parser, never
+  pasted real OCR output, per the no-real-receipts law
+- Currency-symbol override of locale — let a symbol detected in receipt text override the
+  device-locale currency assumption commit 17 made, ahead of full multi-currency detection above
+- Arithmetic cross-check beyond the confirm hint — row 19's totals-mismatch notice is
+  display-only; a stronger reconciliation (e.g. flagging which line item is likely wrong) is
+  future scope
+- Quantity notation — line items don't yet parse a quantity/unit-price split out of a single
+  amount; deferred until a receipt fixture actually needs it
+- Mid-receipt dropout fixtures — OCR fixtures where a middle section (not just edges) is
+  missing or garbled, to exercise the parser's partial-data handling
