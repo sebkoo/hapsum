@@ -99,7 +99,7 @@ product scope · the next stretch of the ladder.
   currencies; `Money` itself stays formatting-free (ADR-0002 — no new ADR needed, the boundary
   is already drawn). Closes a known-wrong display path (triage law) before a third consumer
   (insights, row 23) arrives
-- [ ] 22. `GeminiNanoEngine` behind capability check — ADR-0006 on-device-first AI
+- [x] 22. `GeminiNanoEngine` behind capability check — ADR-0006 on-device-first AI
 - [ ] 23. `:feature:insights` monthly summary + Espresso interop test
 - [ ] 24. `Entitlements` seam — ADR-0007 monetization without lock-in
 - [ ] 25. Kover gate ≥80% on ViewModels/domain + coverage badge

@@ -106,6 +106,33 @@ class ConfirmReducerTest {
     }
 
     @Test
+    fun `reduce — suggestion refined, category still exactly the floor's suggestion — refined category applies`() {
+        val loaded = harness.after(ConfirmUiIntent.Internal.ReceiptLoaded(receipt(), CategoryId("dining")))
+
+        val state =
+            harness.after(
+                loaded,
+                ConfirmUiIntent.Internal.SuggestionRefined(CategoryId("dining"), CategoryId("shopping")),
+            )
+
+        assertEquals(CategoryId("shopping"), state.categoryId)
+    }
+
+    @Test
+    fun `reduce — suggestion refined after the user already picked something else — the user's touch survives`() {
+        val loaded = harness.after(ConfirmUiIntent.Internal.ReceiptLoaded(receipt(), CategoryId("dining")))
+        val corrected = harness.after(loaded, ConfirmUiIntent.CategorySelected(CategoryId("transport")))
+
+        val state =
+            harness.after(
+                corrected,
+                ConfirmUiIntent.Internal.SuggestionRefined(CategoryId("dining"), CategoryId("shopping")),
+            )
+
+        assertEquals(CategoryId("transport"), state.categoryId)
+    }
+
+    @Test
     fun `reduce — receipt load failed — sealed error, stops loading`() {
         val state = harness.after(ConfirmUiIntent.Internal.ReceiptLoadFailed)
 

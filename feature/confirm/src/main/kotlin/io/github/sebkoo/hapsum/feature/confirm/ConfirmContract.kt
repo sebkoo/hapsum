@@ -81,6 +81,17 @@ sealed interface ConfirmUiIntent : UiIntent {
 
         data object ReceiptLoadFailed : Internal
 
+        /**
+         * The chain's (possibly Nano-improved) suggestion, arriving after [ReceiptLoaded]'s
+         * immediate floor prefill (ADR-0006 two-phase). [floorCategoryId] is what the reducer
+         * compares against the current state: the refined value applies only if the user
+         * hasn't touched the category since — their touch always wins.
+         */
+        data class SuggestionRefined(
+            val floorCategoryId: CategoryId,
+            val refinedCategoryId: CategoryId,
+        ) : Internal
+
         data object ExpenseSaved : Internal
 
         data object ExpenseSaveFailed : Internal

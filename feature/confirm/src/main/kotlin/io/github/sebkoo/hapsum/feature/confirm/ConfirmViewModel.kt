@@ -2,7 +2,9 @@ package io.github.sebkoo.hapsum.feature.confirm
 
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import io.github.sebkoo.hapsum.core.ai.RuleBasedEngine
+import io.github.sebkoo.hapsum.core.ai.AiEngine
+import io.github.sebkoo.hapsum.core.ai.CategorizationEvidence
+import io.github.sebkoo.hapsum.core.ai.RuleBasedAiEngine
 import io.github.sebkoo.hapsum.core.data.ExpenseRepository
 import io.github.sebkoo.hapsum.core.data.ReceiptRepository
 import io.github.sebkoo.hapsum.core.model.CurrencyCode
@@ -28,12 +30,19 @@ class ConfirmViewModel
     constructor(
         private val receiptRepository: ReceiptRepository,
         private val expenseRepository: ExpenseRepository,
-        private val ruleBasedEngine: RuleBasedEngine,
+        private val aiEngine: AiEngine,
         private val dispatchers: DispatcherProvider,
     ) : MviViewModel<ConfirmUiState, ConfirmUiIntent, ConfirmUiEffect>(
             initialState = ConfirmUiState(),
             reducer = reducer,
         ) {
+        /**
+         * The two-phase suggestion's immediate half (ADR-0006): the deterministic floor, called
+         * directly rather than through [aiEngine] so first paint never waits on the chain's
+         * timeout budget. Deterministic and stateless — no reason to inject it.
+         */
+        private val floorEngine: AiEngine = RuleBasedAiEngine()
+
         override fun react(
             intent: ConfirmUiIntent,
             state: ConfirmUiState,
@@ -57,23 +66,33 @@ class ConfirmViewModel
 
         private fun loadReceipt(receiptId: ReceiptId) {
             viewModelScope.launch(dispatchers.io) {
-                try {
-                    val receipt = receiptRepository.getById(receiptId)
-                    if (receipt == null) {
+                val receipt =
+                    try {
+                        receiptRepository.getById(receiptId)
+                    } catch (cancellation: CancellationException) {
+                        throw cancellation
+                    } catch (_: Exception) {
                         dispatch(ConfirmUiIntent.Internal.ReceiptLoadFailed)
                         return@launch
                     }
-                    val evidence =
-                        (listOf(receipt.merchant?.value.orEmpty()) + receipt.lineItems.map { it.description })
-                            .joinToString(" ")
-                            .trim()
-                    val suggestedCategoryId = ruleBasedEngine.categorize(evidence)
-                    dispatch(ConfirmUiIntent.Internal.ReceiptLoaded(receipt, suggestedCategoryId))
-                } catch (cancellation: CancellationException) {
-                    throw cancellation
-                } catch (_: Exception) {
+                if (receipt == null) {
                     dispatch(ConfirmUiIntent.Internal.ReceiptLoadFailed)
+                    return@launch
                 }
+
+                // Phase 1 (ADR-0006): the floor never throws, so first paint never waits.
+                val evidence =
+                    CategorizationEvidence(
+                        merchant = receipt.merchant?.value,
+                        lineItemDescriptions = receipt.lineItems.map { it.description },
+                    )
+                val floorCategoryId = floorEngine.categorize(evidence)
+                dispatch(ConfirmUiIntent.Internal.ReceiptLoaded(receipt, floorCategoryId))
+
+                // Phase 2: the chain is total by construction (AiEngineUnavailable never
+                // escapes it) — anything it throws here is a programmer error, left to crash.
+                val refinedCategoryId = aiEngine.categorize(evidence)
+                dispatch(ConfirmUiIntent.Internal.SuggestionRefined(floorCategoryId, refinedCategoryId))
             }
         }
 
@@ -124,6 +143,16 @@ class ConfirmViewModel
 
                     ConfirmUiIntent.Internal.ReceiptLoadFailed -> {
                         state.copy(isLoading = false, error = ConfirmError.LoadFailed)
+                    }
+
+                    is ConfirmUiIntent.Internal.SuggestionRefined -> {
+                        // The user's touch always wins (ADR-0006) — apply only if the category
+                        // is still exactly the floor's own suggestion.
+                        if (state.categoryId == intent.floorCategoryId) {
+                            state.copy(categoryId = intent.refinedCategoryId)
+                        } else {
+                            state
+                        }
                     }
 
                     is ConfirmUiIntent.AmountChanged -> {

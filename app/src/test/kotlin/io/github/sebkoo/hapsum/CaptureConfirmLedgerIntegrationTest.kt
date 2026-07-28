@@ -5,7 +5,7 @@ import androidx.room3.Room
 import androidx.test.core.app.ApplicationProvider
 import app.cash.turbine.ReceiveTurbine
 import app.cash.turbine.test
-import io.github.sebkoo.hapsum.core.ai.RuleBasedEngine
+import io.github.sebkoo.hapsum.core.ai.RuleBasedAiEngine
 import io.github.sebkoo.hapsum.core.data.CategoryRepositoryImpl
 import io.github.sebkoo.hapsum.core.data.ExpenseRepositoryImpl
 import io.github.sebkoo.hapsum.core.data.HapsumDatabase
@@ -111,7 +111,7 @@ class CaptureConfirmLedgerIntegrationTest {
                 ConfirmViewModel(
                     receiptRepository = receiptRepository,
                     expenseRepository = expenseRepository,
-                    ruleBasedEngine = RuleBasedEngine(),
+                    aiEngine = RuleBasedAiEngine(),
                     dispatchers = dispatchers,
                 )
 

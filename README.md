@@ -82,7 +82,9 @@ One atomic commit per step — watch the history, that's the product.
   `expenses.lineItemId` FK
 - ✅ 20. End-to-end integration test: capture→confirm→ledger against a real in-memory database
 - ✅ 21. Shared locale-aware money display formatting (12,000 KRW, never 120.00)
-- 🔜 22–27. Gemini Nano → insights → entitlements seam → coverage gate → `v0.1.0` (full ladder in
+- ✅ 22. `GeminiNanoEngine` behind the `AiEngine` seam — Nano-first, `RuleBasedEngine`-floor
+  fallback chain, confirm's two-phase suggestion, ADR-0006 accepted
+- 🔜 23–27. Insights → entitlements seam → coverage gate → `v0.1.0` (full ladder in
   [docs/PROGRESS.md](docs/PROGRESS.md))
 
 ## Tech stack and how it's tested

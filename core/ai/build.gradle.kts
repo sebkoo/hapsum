@@ -1,22 +1,31 @@
 plugins {
-    id("org.jetbrains.kotlin.jvm")
+    id("com.android.library")
+    alias(libs.plugins.ksp)
 }
 
-kotlin {
-    // Cross-compiles to bytecode 17 on whatever JDK Gradle runs on — matches :app's
-    // compileOptions without forcing a JDK 17 toolchain to be installed (ADR-0001).
-    compilerOptions {
-        jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17)
+android {
+    // The genai-prompt dependency is an Android AAR (ADR-0006) — the row where the module
+    // first needs the Android framework at all.
+    namespace = "io.github.sebkoo.hapsum.core.ai"
+    compileSdk = 36
+
+    defaultConfig {
+        minSdk = 26
     }
-}
 
-java {
-    sourceCompatibility = JavaVersion.VERSION_17
-    targetCompatibility = JavaVersion.VERSION_17
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+    }
 }
 
 dependencies {
     implementation(project(":core:model"))
+    implementation(libs.coroutines.android)
+    implementation(libs.mlkit.genai.prompt)
+    implementation(libs.hilt.android)
+    ksp(libs.hilt.compiler)
 
     testImplementation(libs.junit)
+    testImplementation(libs.coroutines.test)
 }

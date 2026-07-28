@@ -1,7 +1,9 @@
 package io.github.sebkoo.hapsum.feature.confirm
 
 import app.cash.turbine.test
-import io.github.sebkoo.hapsum.core.ai.RuleBasedEngine
+import io.github.sebkoo.hapsum.core.ai.AiEngine
+import io.github.sebkoo.hapsum.core.ai.CategorizationEvidence
+import io.github.sebkoo.hapsum.core.ai.RuleBasedAiEngine
 import io.github.sebkoo.hapsum.core.data.ExpenseRepository
 import io.github.sebkoo.hapsum.core.data.ReceiptRepository
 import io.github.sebkoo.hapsum.core.model.CategoryId
@@ -19,9 +21,11 @@ import io.mockk.coEvery
 import io.mockk.mockk
 import io.mockk.slot
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
@@ -44,12 +48,12 @@ class ConfirmViewModelTest {
     private fun TestScope.viewModel(
         receiptRepository: ReceiptRepository,
         expenseRepository: ExpenseRepository = mockk(),
-        ruleBasedEngine: RuleBasedEngine = RuleBasedEngine(),
+        aiEngine: AiEngine = RuleBasedAiEngine(),
     ): ConfirmViewModel =
         ConfirmViewModel(
             receiptRepository = receiptRepository,
             expenseRepository = expenseRepository,
-            ruleBasedEngine = ruleBasedEngine,
+            aiEngine = aiEngine,
             dispatchers = TestDispatcherProvider(StandardTestDispatcher(testScheduler)),
         )
 
@@ -95,6 +99,53 @@ class ConfirmViewModelTest {
             advanceUntilIdle()
 
             assertEquals(CategoryId("groceries"), vm.state.value.categoryId)
+        }
+
+    @Test
+    fun `load receipt — chain refines the floor's suggestion, category untouched — refined category applies`() =
+        runTest {
+            val receiptRepository =
+                mockk<ReceiptRepository> { coEvery { getById(ReceiptId("r1")) } returns fixtureReceipt() }
+            // Floor prefill is dining (fixtureReceipt's merchant/items hit DINING keywords) — the
+            // chain "improves" it to shopping, simulating a Nano-capable device.
+            val aiEngine =
+                mockk<AiEngine> {
+                    coEvery { categorize(any<CategorizationEvidence>()) } returns
+                        CategoryId("shopping")
+                }
+            val vm = viewModel(receiptRepository, aiEngine = aiEngine)
+
+            vm.onIntent(ConfirmUiIntent.LoadReceipt(ReceiptId("r1")))
+            advanceUntilIdle()
+
+            assertEquals(CategoryId("shopping"), vm.state.value.categoryId)
+        }
+
+    @Test
+    fun `load receipt — user picks a category before the chain answers — the user's touch survives`() =
+        runTest {
+            val receiptRepository =
+                mockk<ReceiptRepository> { coEvery { getById(ReceiptId("r1")) } returns fixtureReceipt() }
+            // A real suspension point (unlike a same-tick mocked return) opens a genuine gap
+            // between the floor's phase-1 dispatch and the chain's phase-2 dispatch to correct
+            // the category into, the same way a real Nano inference call would suspend.
+            val aiEngine =
+                mockk<AiEngine> {
+                    coEvery { categorize(any<CategorizationEvidence>()) } coAnswers {
+                        delay(1_000)
+                        CategoryId("shopping")
+                    }
+                }
+            val vm = viewModel(receiptRepository, aiEngine = aiEngine)
+
+            vm.onIntent(ConfirmUiIntent.LoadReceipt(ReceiptId("r1")))
+            runCurrent()
+            assertEquals(CategoryId("dining"), vm.state.value.categoryId)
+
+            vm.onIntent(ConfirmUiIntent.CategorySelected(CategoryId("transport")))
+            advanceUntilIdle()
+
+            assertEquals(CategoryId("transport"), vm.state.value.categoryId)
         }
 
     @Test
