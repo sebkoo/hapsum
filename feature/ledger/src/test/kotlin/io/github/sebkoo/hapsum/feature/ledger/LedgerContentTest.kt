@@ -40,7 +40,7 @@ class LedgerContentTest {
         }
 
         compose.onNodeWithText("Groceries").assertIsDisplayed()
-        compose.onNodeWithText("USD 2.50").assertIsDisplayed()
+        compose.onNodeWithText("$2.50").assertIsDisplayed()
     }
 
     @Test

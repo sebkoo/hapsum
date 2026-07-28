@@ -21,13 +21,14 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalLocale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import io.github.sebkoo.hapsum.core.designsystem.format
 import io.github.sebkoo.hapsum.core.model.CategoryId
 import io.github.sebkoo.hapsum.core.model.DefaultCategories
 import io.github.sebkoo.hapsum.core.model.LineItem
-import io.github.sebkoo.hapsum.core.model.Money
 import io.github.sebkoo.hapsum.core.model.ParseConfidence
 import io.github.sebkoo.hapsum.core.model.ReceiptId
 
@@ -181,20 +182,16 @@ private fun LineItemsList(
     lineItems: List<LineItem>,
     modifier: Modifier = Modifier,
 ) {
+    val locale = LocalLocale.current.platformLocale
     Column(modifier = modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(4.dp)) {
         lineItems.forEach { item ->
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                 Text(text = item.description, style = MaterialTheme.typography.bodyMedium)
-                Text(text = item.amount.display(), style = MaterialTheme.typography.bodyMedium)
+                Text(
+                    text = item.amount.format(locale),
+                    style = MaterialTheme.typography.bodyMedium,
+                )
             }
         }
     }
-}
-
-// Two-decimal placeholder, same known limitation as `:feature:ledger`'s Money.display() (ADR-0002
-// keeps Money free of formatting): wrong for zero-decimal currencies like KRW.
-private fun Money.display(): String {
-    val units = minorUnits / 100
-    val cents = (minorUnits % 100).toString().padStart(2, '0')
-    return "${currency.isoCode} $units.$cents"
 }

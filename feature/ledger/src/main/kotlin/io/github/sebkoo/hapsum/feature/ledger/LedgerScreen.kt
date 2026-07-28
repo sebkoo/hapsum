@@ -16,13 +16,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalLocale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.sebkoo.hapsum.core.data.ExpenseWithCategory
-import io.github.sebkoo.hapsum.core.model.Money
+import io.github.sebkoo.hapsum.core.designsystem.format
 
 @Composable
 fun LedgerScreen(
@@ -96,14 +97,9 @@ private fun LedgerRow(
             Text(text = row.category.name, style = MaterialTheme.typography.titleMedium)
             Text(text = row.expense.date.toString(), style = MaterialTheme.typography.bodySmall)
         }
-        Text(text = row.expense.amount.display(), style = MaterialTheme.typography.titleMedium)
+        Text(
+            text = row.expense.amount.format(LocalLocale.current.platformLocale),
+            style = MaterialTheme.typography.titleMedium,
+        )
     }
-}
-
-// Two-decimal placeholder: real locale/currency-aware formatting is deferred presentation
-// work (ADR-0002 keeps Money free of formatting); wrong for zero-decimal currencies like KRW.
-private fun Money.display(): String {
-    val units = minorUnits / 100
-    val cents = (minorUnits % 100).toString().padStart(2, '0')
-    return "${currency.isoCode} $units.$cents"
 }

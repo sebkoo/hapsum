@@ -92,7 +92,7 @@ product scope · the next stretch of the ladder.
   exactly one expense exists with the edited amount, the user's chosen category, and the
   `receiptId` linkage. The executable version of the manual boot walkthrough — the loop is the
   product, so the loop gets a test. No production code changes expected from this row.
-- [ ] 21. `fix(money): shared locale-aware Money display formatting, replacing the display placeholders`
+- [x] 21. `fix(money): shared locale-aware Money display formatting, replacing the display placeholders`
   — one correct shared formatter respecting ISO-4217 fraction digits (a 12000-minor-unit KRW
   amount renders as 12,000 KRW, never 120.00), replacing the duplicated two-decimal placeholders
   in `:feature:ledger` and `:feature:confirm`; unit tests pin 0-, 2-, and 3-fraction-digit

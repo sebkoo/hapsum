@@ -82,7 +82,7 @@ class ConfirmContentTest {
         compose.onNodeWithText("5.50").assertIsDisplayed()
         compose.onNodeWithText("2026-01-01").assertIsDisplayed()
         compose.onNodeWithText("Milk").assertIsDisplayed()
-        compose.onNodeWithText("USD 2.50").assertIsDisplayed()
+        compose.onNodeWithText("$2.50").assertIsDisplayed()
     }
 
     @Test
