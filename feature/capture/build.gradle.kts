@@ -3,6 +3,13 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.ksp)
+    alias(libs.plugins.kover)
+}
+
+kover {
+    currentProject {
+        createVariant("gate") { add("debug") }
+    }
 }
 
 android {

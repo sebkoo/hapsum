@@ -89,7 +89,8 @@ One atomic commit per step — watch the history, that's the product.
 - ✅ 24. `Entitlements` seam — closed `Entitlement` enum in `:core:model`, `Flow<Boolean>` read
   surface + `FreeTierEntitlements` bound in `DataModule`, zero consumers by design, ADR-0007
   accepted
-- 🔜 25–27. Coverage gate → screenshots/README refresh → `v0.1.0` (full ladder in
+- ✅ 25. Kover ≥80% line coverage gate on ViewModels/domain, riding inside `scripts/verify.sh`
+- 🔜 26–27. Screenshots/README refresh → `v0.1.0` (full ladder in
   [docs/PROGRESS.md](docs/PROGRESS.md))
 
 ## Tech stack and how it's tested

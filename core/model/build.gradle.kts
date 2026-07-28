@@ -1,5 +1,12 @@
 plugins {
     id("org.jetbrains.kotlin.jvm")
+    alias(libs.plugins.kover)
+}
+
+kover {
+    currentProject {
+        createVariant("gate") { add("jvm") }
+    }
 }
 
 kotlin {

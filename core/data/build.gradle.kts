@@ -2,6 +2,13 @@ plugins {
     id("com.android.library")
     alias(libs.plugins.ksp)
     alias(libs.plugins.room3)
+    alias(libs.plugins.kover)
+}
+
+kover {
+    currentProject {
+        createVariant("gate") { add("debug") }
+    }
 }
 
 android {

@@ -171,4 +171,11 @@ class ReceiptParserTest {
 
         assertEquals(ParsedField(Money(5_00, zzz), ParseConfidence.HIGH), result.total)
     }
+
+    @Test
+    fun `parse — textual day-month-year date — date parses with HIGH confidence`() {
+        val result = parseReceipt(OcrText(listOf("25 Dec 2025")), usd)
+
+        assertEquals(ParsedField(LocalDate.of(2025, 12, 25), ParseConfidence.HIGH), result.purchasedAt)
+    }
 }

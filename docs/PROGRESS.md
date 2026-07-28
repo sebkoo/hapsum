@@ -115,7 +115,16 @@ product scope · the next stretch of the ladder.
   enum in `:core:model` making ADR-0006's CloudEngine precondition checkable, `Flow<Boolean>`
   read surface + `FreeTierEntitlements` bound in `DataModule` under `:core:data`, zero
   consumers by design (no gate on any free feature), pure JVM ahead of row 25's Kover gate
-- [ ] 25. Kover gate ≥80% on ViewModels/domain + coverage badge
+- [x] 25. Kover gate ≥80% on ViewModels/domain + coverage badge — merged "gate" variant (Kover
+  0.9.8) over ViewModels/domain across ten modules, LINE minBound 80 riding inside
+  `scripts/verify.sh`; measured 98.29% line / 82.65% branch at introduction (branch not gated —
+  compiler-generated coroutine/reducer branches would incentivize filler tests); named
+  zero-coverage-by-design exclusions (`GeminiNanoEngine*` per ADR-0006,
+  `DefaultDispatcherProvider*`); added the textual day-month-year date fixture
+  (`ReceiptParser.kt:192-195`) closing the one substantial honest gap the measurement found.
+  Coverage badge omitted — the human pre-work it depends on (gist +
+  `KOVER_BADGE_GIST_TOKEN` repo secret) is not yet in place. Backlog, not this row: filler-free
+  tests for `MviViewModel.requeue` and the `ExpenseMapping` branch gaps
 - [ ] 26. Screenshots/GIF + README refresh
 - [ ] 27. `v0.1.0` tagged release with changelog
 

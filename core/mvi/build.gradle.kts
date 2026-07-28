@@ -1,5 +1,12 @@
 plugins {
     id("com.android.library")
+    alias(libs.plugins.kover)
+}
+
+kover {
+    currentProject {
+        createVariant("gate") { add("debug") }
+    }
 }
 
 android {

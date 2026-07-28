@@ -4,7 +4,7 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
-./gradlew spotlessCheck assembleDebug testDebugUnitTest test lint
+./gradlew spotlessCheck assembleDebug testDebugUnitTest test lint :koverVerifyGate
 
 # Every ADR must appear in the index. ADR-0000 predates the index by one
 # commit, so the check warns instead of failing until the index exists.
