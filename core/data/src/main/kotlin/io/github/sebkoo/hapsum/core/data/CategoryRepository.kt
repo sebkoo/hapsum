@@ -1,9 +1,10 @@
 package io.github.sebkoo.hapsum.core.data
 
 import io.github.sebkoo.hapsum.core.model.CategoryId
+import io.github.sebkoo.hapsum.core.model.DefaultCategories
 
 interface CategoryRepository {
-    /** Idempotent — safe to call on every app start. Seeds the reserved [CategoryId.UNCATEGORIZED]. */
+    /** Idempotent — safe to call on every app start. Seeds [DefaultCategories.all]. */
     suspend fun seedDefaults()
 
     suspend fun archive(categoryId: CategoryId)
@@ -14,7 +15,9 @@ class CategoryRepositoryImpl(
 ) : CategoryRepository {
     override suspend fun seedDefaults() {
         dao.insertDefaults(
-            listOf(CategoryEntity(id = CategoryId.UNCATEGORIZED.value, name = "Uncategorized")),
+            DefaultCategories.all.map { category ->
+                CategoryEntity(id = category.id.value, name = category.name)
+            },
         )
     }
 

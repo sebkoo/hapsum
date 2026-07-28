@@ -66,7 +66,14 @@ product scope · the next stretch of the ladder.
   table (v2→v3 migration, `MigrationTestHelper`-proven). Scope ends at capture storing ocrText +
   parse output on the `Receipt` — the confirm screen is a discovered missing ladder row, flagged
   below for the Phase 3 gate
-- [ ] 18. `feat(ai): RuleBasedEngine categorizer` + tests
+- [x] 18. `feat(ai): RuleBasedEngine categorizer` + tests — `:core:ai` carved out, pure JVM for
+  now (the android-library conversion belongs to row 19, when `GeminiNanoEngine` needs a
+  `Context`). A pure keyword categorizer: whole-word case-insensitive matching, rule order as
+  deterministic precedence for ambiguous words, `UNCATEGORIZED` floor. No `AiEngine` interface
+  yet — ADR-0001 fixed the boundary and explicitly deferred that design to ADR-0006 (row 19).
+  The engine's vocabulary and the startup seed share one source of truth (`DefaultCategories`
+  in `:core:model`), so every id the engine can suggest exists in the database by construction
+  — no FK ambush when confirm starts persisting suggestions
 
 **Phase gate — human review before Phase 3.**
 
