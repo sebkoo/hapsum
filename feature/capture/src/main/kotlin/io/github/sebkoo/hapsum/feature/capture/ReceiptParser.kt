@@ -30,8 +30,9 @@ data class ParsedLineItem(
  * no clock, no device locale, no I/O — so the committed golden fixtures pin its behavior
  * exactly. Heuristics, and the confidence each one earns:
  * - **total** — the last line carrying a total keyword (never "subtotal") and an amount is
- *   HIGH; with no keyword line, the largest amount on any non-date line is LOW; no amounts
- *   at all, null.
+ *   HIGH; with no keyword line, the largest *positive* amount on any non-date line is LOW — a
+ *   negative amount (a discount or refund line) is never inferred as the total; no positive
+ *   amounts at all, null.
  * - **date** — ISO, named-month, or a numeric date with one component over 12 is HIGH; an
  *   ambiguous numeric date reads month-first and is LOW; nothing plausible, null.
  * - **merchant** — the first line with a letter and no amount, date, or keyword on it.
@@ -69,6 +70,7 @@ fun parseReceipt(
         rows
             .filter { row -> row.date == null }
             .mapNotNull(Row::amount)
+            .filter { amount -> amount.minorUnits > 0 }
             .maxByOrNull(Money::minorUnits)
             ?.let { amount -> ParsedField(amount, ParseConfidence.LOW) }
 
@@ -123,13 +125,15 @@ private val NOISE_KEYWORDS =
 /**
  * For zero-fraction currencies any digit run (optionally thousands-grouped) is an amount; for
  * the rest an amount must carry a decimal separator followed by at most the currency's
- * fraction digits. When both `.` and `,` appear, the last one is the decimal separator.
+ * fraction digits. When both `.` and `,` appear, the last one is the decimal separator. An
+ * optional leading minus reads a discount or refund line as a negative [Money] — never
+ * silently dropped.
  */
 private fun amountRegex(fractionDigits: Int): Regex =
     if (fractionDigits == 0) {
-        Regex("""(?<![\d.,])(?:\d{1,3}(?:[.,\s]\d{3})+|\d+)(?!\d)""")
+        Regex("""(?<![\d.,])-?(?:\d{1,3}(?:[.,\s]\d{3})+|\d+)(?!\d)""")
     } else {
-        Regex("""(?<![\d.,])(?:\d{1,3}(?:[.,\s]\d{3})*|\d+)[.,]\d{1,$fractionDigits}(?![\d%])""")
+        Regex("""(?<![\d.,])-?(?:\d{1,3}(?:[.,\s]\d{3})*|\d+)[.,]\d{1,$fractionDigits}(?![\d%])""")
     }
 
 private fun toMinorUnits(
@@ -137,13 +141,22 @@ private fun toMinorUnits(
     fractionDigits: Int,
 ): Long? {
     val compact = token.filterNot(Char::isWhitespace)
-    if (fractionDigits == 0) return compact.filter(Char::isDigit).toLongOrNull()
+    val negative = compact.startsWith("-")
+    val magnitude = toUnsignedMinorUnits(if (negative) compact.substring(1) else compact, fractionDigits) ?: return null
+    return if (negative) -magnitude else magnitude
+}
+
+private fun toUnsignedMinorUnits(
+    token: String,
+    fractionDigits: Int,
+): Long? {
+    if (fractionDigits == 0) return token.filter(Char::isDigit).toLongOrNull()
     var scale = 1L
     repeat(fractionDigits) { scale *= 10 }
-    val separatorIndex = compact.lastIndexOfAny(charArrayOf('.', ','))
-    if (separatorIndex < 0) return compact.toLongOrNull()?.let { whole -> whole * scale }
-    val whole = compact.take(separatorIndex).filter(Char::isDigit).ifEmpty { "0" }
-    val fraction = compact.drop(separatorIndex + 1).padEnd(fractionDigits, '0')
+    val separatorIndex = token.lastIndexOfAny(charArrayOf('.', ','))
+    if (separatorIndex < 0) return token.toLongOrNull()?.let { whole -> whole * scale }
+    val whole = token.take(separatorIndex).filter(Char::isDigit).ifEmpty { "0" }
+    val fraction = token.drop(separatorIndex + 1).padEnd(fractionDigits, '0')
     val wholeUnits = whole.toLongOrNull() ?: return null
     return wholeUnits * scale + fraction.toLong()
 }

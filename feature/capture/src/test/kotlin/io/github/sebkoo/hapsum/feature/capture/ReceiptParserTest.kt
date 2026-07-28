@@ -108,6 +108,27 @@ class ReceiptParserTest {
     }
 
     @Test
+    fun `parse — discount-refund fixture — leading minus is negative, never the fallback total`() {
+        val result = parseReceipt(fixture("discount-refund.txt"), usd)
+
+        assertEquals(
+            ParsedReceipt(
+                merchant = ParsedField("SYNTH REFUND CENTER", ParseConfidence.LOW),
+                purchasedAt = null,
+                // Every amount on this receipt is negative — a discount/refund line is never
+                // inferred as the total, so the fallback correctly finds nothing to report.
+                total = null,
+                lineItems =
+                    listOf(
+                        ParsedLineItem("Returned Item", Money(-12_50, usd)),
+                        ParsedLineItem("Restocking Fee", Money(-2_00, usd)),
+                    ),
+            ),
+            result,
+        )
+    }
+
+    @Test
     fun `parse — lowercase total keyword — still HIGH`() {
         val result = parseReceipt(OcrText(listOf("total 5.00")), usd)
 
