@@ -11,7 +11,7 @@ The README progress board mirrors this file manually, in the same commit as each
 - [x] 3. `chore(env): scaffold app module with compose shell`
 - [x] 4. `chore(ai-harness): add CLAUDE.md, slash commands, and progress board`
 - [x] 5. `ci: build, test and lint on every push`
-- [ ] 6. `docs: publish README v1` — then public repo, About + topics, dressing audit
+- [x] 6. `docs: publish README v1` — then public repo, About + topics, dressing audit
 
 **Phase gate — human review before Phase 1:** architecture docs and ADR-0001 · dependency pins ·
 product scope · the next stretch of the ladder.
