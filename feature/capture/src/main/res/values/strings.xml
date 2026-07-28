@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="capture_permission_rationale">Camera access is needed to photograph receipts</string>
+    <string name="capture_permission_request">Grant camera access</string>
+    <string name="capture_button">Capture receipt</string>
+    <string name="capture_save_failed">Couldn\'t save the receipt</string>
+</resources>

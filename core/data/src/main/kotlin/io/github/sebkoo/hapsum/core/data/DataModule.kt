@@ -34,4 +34,8 @@ internal object DataModule {
     @Provides
     fun provideCategoryRepository(database: HapsumDatabase): CategoryRepository =
         CategoryRepositoryImpl(database.categoryDao())
+
+    @Provides
+    fun provideReceiptRepository(database: HapsumDatabase): ReceiptRepository =
+        ReceiptRepositoryImpl(database.receiptDao())
 }

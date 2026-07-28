@@ -7,6 +7,7 @@ import io.github.sebkoo.hapsum.core.model.Expense
 import io.github.sebkoo.hapsum.core.model.ExpenseId
 import io.github.sebkoo.hapsum.core.model.LineItemId
 import io.github.sebkoo.hapsum.core.model.Money
+import io.github.sebkoo.hapsum.core.model.Receipt
 import io.github.sebkoo.hapsum.core.model.ReceiptId
 import java.time.LocalDate
 
@@ -42,4 +43,22 @@ internal fun ExpenseWithCategoryRow.toDomain(): ExpenseWithCategory =
     ExpenseWithCategory(
         expense = expense.toDomain(),
         category = category.toDomain(),
+    )
+
+internal fun Receipt.toEntity(): ReceiptEntity =
+    ReceiptEntity(
+        id = id.value,
+        imageRef = imageRef,
+        ocrText = ocrText,
+        parseConfidence = parseConfidence,
+    )
+
+/** Line items never round-trip here — no `LineItemEntity` table exists yet (row 17). */
+internal fun ReceiptEntity.toDomain(): Receipt =
+    Receipt(
+        id = ReceiptId(id),
+        imageRef = imageRef,
+        ocrText = ocrText,
+        parseConfidence = parseConfidence,
+        lineItems = emptyList(),
     )

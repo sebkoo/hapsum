@@ -39,9 +39,11 @@ android {
 
 dependencies {
     implementation(project(":core:designsystem"))
+    implementation(project(":core:model"))
     implementation(project(":core:data"))
     implementation(project(":core:mvi"))
     implementation(project(":feature:ledger"))
+    implementation(project(":feature:capture"))
 
     implementation(platform(libs.compose.bom))
     implementation(libs.androidx.core.ktx)

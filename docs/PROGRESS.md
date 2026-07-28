@@ -44,7 +44,7 @@ product scope · the next stretch of the ladder.
   ViewModel approached); migrates every current injection site (database, repositories,
   dispatchers, `LedgerViewModel` → `@HiltViewModel`); no Hilt test infrastructure until a test
   needs it
-- [ ] 16. `feat(capture): CameraX capture screen` — copies the ledger MVI template; permission
+- [x] 16. `feat(capture): CameraX capture screen` — copies the ledger MVI template; permission
   flow; `ReceiptRepository` + its read surface arrive here (their first user); the first
   effect-emitting screen (the Compose effect-collection helper and possibly `MainDispatcherRule`
   find their first real users); navigation effect carries the new receipt id. Capture writes the
