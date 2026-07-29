@@ -192,10 +192,6 @@ screenshots and an installable APK. The core app stays open source; a paid Pro b
 add conveniences (unlimited scans, CSV/PDF export, deeper insights) through the `Entitlements`
 boundary drawn dashed above. R8/resource shrinking and a real release keystore are next.
 
-## Star history
-
-[![Star History Chart](https://api.star-history.com/svg?repos=sebkoo/hapsum&type=Date)](https://star-history.com/#sebkoo/hapsum&Date)
-
 ---
 
 Apache-2.0 · built by [@sebkoo](https://github.com/sebkoo) · If the architecture notes or the

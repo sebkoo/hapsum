@@ -154,7 +154,9 @@ product scope · the next stretch of the ladder.
 - ~~Kover coverage badge (shields endpoint from a gist, no external service) — commit 25~~ live
   as of commit 26
 - ~~`github/v/release` + downloads badges — v0.1.0~~ live as of commit 27
-- ~~Star-history widget + Releases APK download section — v0.1.0~~ live as of commit 27
+- ~~Releases APK download section — v0.1.0~~ live as of commit 27
+- Star-history widget — retired (README maintenance commit) pending an actual curve; the
+  trigger is once stars form a visible curve, not merely once a release exists
 - Official Google Play badge — queued until the app is actually on Play
 
 ## Operational backlog (friction to revisit, not commits)
