@@ -26,8 +26,9 @@ expenses, entirely on-device.
 - **Privacy** — nothing leaves the device; cloud AI exists only as an explicit, off-by-default
   opt-in seam
 - **Quality gate** — `scripts/verify.sh` (Spotless, lint, unit tests, Kover ≥80% line coverage
-  on ViewModels/domain) enforced identically local, pre-commit, and in CI; measured at this
-  release: 98.29% line / 82.65% branch
+  on ViewModels/domain) enforced identically local, pre-commit, and in CI; coverage gate
+  introduced at 98.29% line / 82.65% branch (row 25, pre-fixture); 99.2% line / 83.3% branch
+  measured at the v0.1.0 tag
 
 [Unreleased]: https://github.com/sebkoo/hapsum/compare/v0.1.0...HEAD
 [0.1.0]: https://github.com/sebkoo/hapsum/releases/tag/v0.1.0
