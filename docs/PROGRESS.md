@@ -164,6 +164,9 @@ product scope · the next stretch of the ladder.
 - R8/resource shrinking — v0.1.0's `assembleRelease` measured 55 MB unminified; shrink before
   the next release
 - Real release keystore before any Play submission — v0.1.0 ships debug-signed, sideload only
+- CI coverage variance — observed once (91.9% vs 99.2% LINE on identical sources, CI runs
+  30408301089 / 30409728283); add Kover XML artifact retention to CI before investigating any
+  recurrence
 - Generalize the README lint into a docs lint
 - Add `/review` and `/release` commands when their work exists
 - Split verify.sh into `verify-*.sh` stages at ~50 lines
